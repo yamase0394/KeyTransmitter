@@ -20,6 +20,12 @@ public abstract class Key implements Serializable {
     protected String description;
     protected Type type;
 
+    /**
+     * @param columnSpan
+     * @param rowSpan
+     * @param name
+     * @param description
+     */
     public Key(int columnSpan, int rowSpan, String name, String description, Type type) {
         this.columnSpan = columnSpan;
         this.rowSpan = rowSpan;

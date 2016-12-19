@@ -8,6 +8,8 @@ import android.view.MotionEvent;
 
 public class MyRecyclerView extends RecyclerView{
 
+    private boolean isEditable;
+
     public MyRecyclerView(Context context) {
         super(context);
     }
@@ -22,9 +24,16 @@ public class MyRecyclerView extends RecyclerView{
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
+        if(isEditable){
+            return super.onInterceptTouchEvent(e);
+        }
         //falseにすると子ViewのMotionEventがキャンセルされなくなる
         //しかし、RecyclerViewのイベントがキャンセルされる
         //編集モードを作る
         return false;
+    }
+
+    public void setEditable(boolean isEditable) {
+        this.isEditable = isEditable;
     }
 }

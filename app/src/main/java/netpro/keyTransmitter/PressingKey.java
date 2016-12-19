@@ -2,34 +2,45 @@ package netpro.keyTransmitter;
 
 import android.util.Log;
 
-/**押している間*/
-public class PressingKey extends Key implements Runnable{
+/**
+ * 押している間キーコードを送信し続けるキーです
+ */
+public class PressingKey extends Key {
     private boolean running;
+    private long inputInterval;
 
-    public PressingKey(int columnSpan, int rowSpan, String name, String description, Type type) {
+    /**
+     * @param inputInterval キーを送信する間隔(ミリ秒)
+     */
+    public PressingKey(int columnSpan, int rowSpan, String name, String description, Type type, long inputInterval) {
         super(columnSpan, rowSpan, name, description, type);
+        this.inputInterval = inputInterval;
     }
 
     @Override
     public void onActionDown() {
+        running = false;
         running = true;
-        new Thread(this).start();
+        new Thread(new Executer()).start();
     }
 
     @Override
     public void onActionUp() {
-        Log.d("pressing","ヤメロォ");
+        Log.d("pressing", "ヤメロォ");
         running = false;
     }
 
-    @Override
-    public void run() {
-        while (running) {
-            Log.d("Pressing", "押してる");
-            try {
-                Thread.sleep(300);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+    private class Executer implements Runnable {
+        @Override
+        public void run() {
+            while (running) {
+                Log.d("Pressing", "押してる");
+                try {
+                    Thread.sleep(inputInterval);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

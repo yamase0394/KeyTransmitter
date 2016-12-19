@@ -4,6 +4,9 @@ import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+/**
+ * RecyclerViewの子View間のスペースを設定するクラスです
+ */
 public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
 
     private final int topSpace;

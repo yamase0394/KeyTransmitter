@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < 19; i++) {
             datasource.add(new EmptyKey());
         }
-        datasource.add(new PressingKey(1, 1, "aaa", "aaa", Key.Type.PRESSING));
+        datasource.add(new PressingKey(1, 1, "aaa", "aaa", Key.Type.PRESSING, 100));
         adapter = new KeyRecyclerViewAdapter();
         adapter.addAllView(datasource);
 
@@ -105,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            return true;
+            //return rv.onInterceptTouchEvent(e);
+            return false;
         }
 
         @Override
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
         }
     }
 

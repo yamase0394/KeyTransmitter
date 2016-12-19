@@ -8,7 +8,7 @@ public class NormalKey extends Key {
     }
 
     @Override
-    public void onActionDown() {
+    public void onActionUp() {
         Log.d("KeyViewHolder", "送信:話したとき");
     }
 }
