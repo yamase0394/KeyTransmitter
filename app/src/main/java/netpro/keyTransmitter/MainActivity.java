@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
+        final MyRecyclerView recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
         //ScrollController controller = new ScrollController();
         //recyclerView.addOnItemTouchListener(controller);
         recyclerView.setHasFixedSize(false);
@@ -54,13 +54,16 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            Log.d("main", "ない");
-            for (int i = 0; i < 20; i++) {
-                datasource.add(Key.getEmptyKey());
-            }
-            adapter = new KeyRecyclerViewAdapter();
-            adapter.addAllView(datasource);
+
         }
+
+        Log.d("main", "ない");
+        for (int i = 0; i < 19; i++) {
+            datasource.add(new EmptyKey());
+        }
+        datasource.add(new PressingKey(1, 1, "aaa", "aaa", Key.Type.PRESSING));
+        adapter = new KeyRecyclerViewAdapter();
+        adapter.addAllView(datasource);
 
         recyclerView.setAdapter(adapter);
 

@@ -2,9 +2,9 @@ package netpro.keyTransmitter;
 
 import java.io.Serializable;
 
-public class Key implements Serializable{
+public abstract class Key implements Serializable {
 
-    private static final long serialVersionUID = 5559614634094335356L;
+    private static final long serialVersionUID = 5559614634094335358L;
 
     public enum Type {
         RELEASED,
@@ -14,11 +14,11 @@ public class Key implements Serializable{
         EMPTY;
     }
 
-    private int columnSpan;
-    private int rowSpan;
-    private String name;
-    private String description;
-    private Type type;
+    protected int columnSpan;
+    protected int rowSpan;
+    protected String name;
+    protected String description;
+    protected Type type;
 
     public Key(int columnSpan, int rowSpan, String name, String description, Type type) {
         this.columnSpan = columnSpan;
@@ -48,7 +48,15 @@ public class Key implements Serializable{
         return type;
     }
 
-    public static Key getEmptyKey() {
-        return new Key(1, 1, "", "", Type.EMPTY);
+    public void onActionDown() {
+
+    }
+
+    public void onActionUp() {
+
+    }
+
+    public void onLongClick() {
+
     }
 }

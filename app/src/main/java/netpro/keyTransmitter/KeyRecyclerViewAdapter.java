@@ -32,6 +32,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         params.height = (displayWidth - displayWidth / 8) / 4 * key.getRowSpan();
         view.itemView.setLayoutParams(params);
         view.setText((datasource.get(position)).getName(), datasource.get(position).getDescription());
+        view.setKey(key);
     }
 
     @Override
@@ -56,7 +57,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         datasource.remove(index);
         notifyItemRemoved(index);
         for (int i = 0; i < keySize; i++) {
-            addView(Key.getEmptyKey());
+            addView(new EmptyKey());
             notifyItemInserted(datasource.size() - 1);
         }
         Log.d("remove", String.valueOf(index));
@@ -80,4 +81,5 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
     public String getName() {
         return "keyBoard.txt";
     }
+
 }

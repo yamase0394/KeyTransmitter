@@ -1,20 +1,50 @@
 package netpro.keyTransmitter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-public class KeyViewHolder extends RecyclerView.ViewHolder {
+public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
     private TextView name;
     private TextView description;
+    private View.OnTouchListener listener;
+    private Key key;
 
     public KeyViewHolder(View itemView) {
         super(itemView);
-      //  titleTextView = (TextView) itemView.findViewById(R.id.textView_main);
+        itemView.setOnTouchListener(this);
+        itemView.setOnLongClickListener(this);
+        //  titleTextView = (TextView) itemView.findViewById(R.id.textView_main);
         //summaryTextView = (TextView) itemView.findViewById(R.id.textView_sub);
     }
 
+    public void setKey(Key key) {
+        this.key = key;
+    }
+
     public void setText(String name, String description) {
-       // titleTextView.setText(title.toUpperCase());
+        // titleTextView.setText(title.toUpperCase());
+    }
+
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+        Log.d("KeyViewHolder", motionEvent.toString());
+        switch (motionEvent.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                key.onActionDown();
+                return true;
+            case MotionEvent.ACTION_CANCEL:
+            case MotionEvent.ACTION_UP:
+                key.onActionUp();
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onLongClick(View view) {
+        key.onLongClick();
+        return false;
     }
 }
