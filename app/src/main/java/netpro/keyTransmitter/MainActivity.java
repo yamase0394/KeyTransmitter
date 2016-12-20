@@ -4,8 +4,11 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
@@ -22,13 +25,17 @@ public class MainActivity extends AppCompatActivity {
 
     private KeyRecyclerViewAdapter adapter;
     private static Point viewSize;
+    private MyRecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final MyRecyclerView recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
         //ScrollController controller = new ScrollController();
         //recyclerView.addOnItemTouchListener(controller);
         recyclerView.setHasFixedSize(false);
@@ -58,11 +65,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Log.d("main", "ない");
-        for (int i = 0; i < 19; i++) {
+        for (int i = 0; i < 14; i++) {
             datasource.add(new EmptyKey());
         }
+        datasource.add(new NormalKey(2, 1, "", "", Key.Type.RELEASED));
+        datasource.add(new NormalKey(1, 3, "", "", Key.Type.RELEASED));
         datasource.add(new PressingKey(1, 1, "aaa", "aaa", Key.Type.PRESSING, 100));
-        adapter = new KeyRecyclerViewAdapter();
+        adapter = new KeyRecyclerViewAdapter(getApplicationContext());
         adapter.addAllView(datasource);
 
         recyclerView.setAdapter(adapter);
@@ -140,5 +149,22 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.editMode:
+               recyclerView.setEditable(true);
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 }
 

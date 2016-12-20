@@ -1,6 +1,8 @@
 package netpro.keyTransmitter;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,12 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
     private List<Key> datasource = new LinkedList<>();
     private int displayWidth = 720;
     //private int width = 768;
+    private Context context;
+
+
+    public KeyRecyclerViewAdapter(Context context) {
+        this.context = context;
+    }
 
     @Override
     public KeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -30,6 +38,15 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.width = (displayWidth - displayWidth / 8) / 4 * key.getColumnSpan();
         params.height = (displayWidth - displayWidth / 8) / 4 * key.getRowSpan();
+
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        if (key.getColumnSpan() > 1) {
+            params.width += (key.getColumnSpan() - 1) * (10 * metrics.density);
+        }
+        if (key.getRowSpan() > 1) {
+            params.height += (key.getRowSpan() - 1) * (10 * metrics.density);
+        }
+
         view.itemView.setLayoutParams(params);
         view.setText((datasource.get(position)).getName(), datasource.get(position).getDescription());
         view.setKey(key);
