@@ -2,6 +2,7 @@ package netpro.keyTransmitter;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +22,7 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener{
+public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener {
 
     private EditKeyRecyclerViewAdapter adapter;
     private MyRecyclerView recyclerView;
@@ -106,7 +108,9 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
 
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
-                if (viewHolder instanceof EditKeyViewHolder) return 0;
+                if (viewHolder instanceof EditKeyViewHolder) {
+                    return 0;
+                }
                 return super.getSwipeDirs(recyclerView, viewHolder);
             }
 
@@ -119,6 +123,14 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
 
         //編集モード
         recyclerView.setEditable(true);
+
+        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.addViewButton);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("edit", "add");
+            }
+        });
     }
 
     @Override
