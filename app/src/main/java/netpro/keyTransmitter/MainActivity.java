@@ -4,13 +4,10 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 import java.io.File;
@@ -37,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
-        //ScrollController controller = new ScrollController();
-        //recyclerView.addOnItemTouchListener(controller);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new SpannedGridLayoutManager(new SpannedGridLayoutManager.GridSpanLookup() {
             @Override
@@ -80,23 +75,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         recyclerView.addItemDecoration(new SpaceItemDecoration(0, 1, 1, 0));
-
-        ItemTouchHelper itemDecor = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
-            @Override
-            public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
-                final int fromPos = viewHolder.getAdapterPosition();
-                final int toPos = target.getAdapterPosition();
-                adapter.move(fromPos, toPos);
-                return true;
-            }
-
-            @Override
-            public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                final int fromPos = viewHolder.getAdapterPosition();
-                adapter.removeView(fromPos);
-            }
-        });
-        itemDecor.attachToRecyclerView(recyclerView);
     }
 
     @Override
@@ -107,28 +85,6 @@ public class MainActivity extends AppCompatActivity {
         point.set(r.getWidth(), r.getHeight());
         viewSize = point;
         Log.d("setViewSize", String.valueOf(point.x) + ":" + String.valueOf(point.y));
-    }
-
-
-    private class ScrollController implements RecyclerView.OnItemTouchListener {
-
-        public ScrollController() {
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            //return rv.onInterceptTouchEvent(e);
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
     }
 
     @Override

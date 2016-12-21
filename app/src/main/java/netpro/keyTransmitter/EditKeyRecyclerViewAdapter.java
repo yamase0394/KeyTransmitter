@@ -12,25 +12,25 @@ import android.widget.LinearLayout;
 import java.util.LinkedList;
 import java.util.List;
 
-public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> {
+public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyViewHolder> {
     private List<Key> datasource = new LinkedList<>();
     private int displayWidth = 720;
     //private int width = 768;
     private Context context;
+    private OnRecyclerClickListener listener;
 
-
-    public KeyRecyclerViewAdapter(Context context) {
+    public EditKeyRecyclerViewAdapter(Context context) {
         this.context = context;
     }
 
     @Override
-    public KeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public EditKeyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_cardview, parent, false);
-        return new KeyViewHolder(v);
+        return new EditKeyViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(KeyViewHolder view, int position) {
+    public void onBindViewHolder(EditKeyViewHolder view, int position) {
         //Keyのサイズを画面のサイズに合わせて変更
         Key key = datasource.get(position);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -47,6 +47,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
 
         view.itemView.setLayoutParams(params);
         view.setKey(key);
+        view.setListener(listener);
     }
 
     @Override
@@ -101,4 +102,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         return "keyboard";
     }
 
+    public void setOnRecyclerClickListener(OnRecyclerClickListener listener) {
+        this.listener = listener;
+    }
 }

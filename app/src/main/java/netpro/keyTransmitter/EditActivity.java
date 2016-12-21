@@ -7,6 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -19,21 +20,21 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EditActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener{
 
-    private KeyRecyclerViewAdapter adapter;
+    private EditKeyRecyclerViewAdapter adapter;
     private MyRecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_edit);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setTitle("編集モード");
 
         recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(false);
@@ -45,12 +46,14 @@ public class EditActivity extends AppCompatActivity {
             }
         }, 4, 1f));
 
+        //RecyclerViewに登録するデータの初期化
         List<Key> datasource = new LinkedList<>();
         File dir = getFilesDir();
         String fileSeparator = File.separator;
         String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
         File file = new File(filePath);
         Log.d("main", file.toString());
+        //シリアライズされたデータがあるか
         if (file.exists()) {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
@@ -71,13 +74,27 @@ public class EditActivity extends AppCompatActivity {
             datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
         }
 
-        adapter = new KeyRecyclerViewAdapter(getApplicationContext());
-        adapter.addAllView(datasource);
+        adapter = new EditKeyRecyclerViewAdapter(getApplicationContext());
+        adapter.setOnRecyclerClickListener(new OnRecyclerClickListener() {
+            @Override
+            public void onClickListener(final int position, Key key) {
+                Log.d("click", String.valueOf(position));
 
+                if (key instanceof EmptyKey) {
+                    return;
+                }
+
+                android.support.v4.app.DialogFragment dialogFragment = EditMenuDialogFragment.newInstance(position, key.getName(), key.getDescription());
+                dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
+            }
+        });
+        adapter.addAllView(datasource);
         recyclerView.setAdapter(adapter);
 
+        //子View間の幅を設定する
         recyclerView.addItemDecoration(new SpaceItemDecoration(0, 1, 1, 0));
 
+        //子Viewをドラッグで移動できるようにする
         ItemTouchHelper itemDecor = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -88,13 +105,19 @@ public class EditActivity extends AppCompatActivity {
             }
 
             @Override
+            public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
+                if (viewHolder instanceof EditKeyViewHolder) return 0;
+                return super.getSwipeDirs(recyclerView, viewHolder);
+            }
+
+            @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-                final int fromPos = viewHolder.getAdapterPosition();
-                adapter.removeView(fromPos);
+
             }
         });
         itemDecor.attachToRecyclerView(recyclerView);
 
+        //編集モード
         recyclerView.setEditable(true);
     }
 
@@ -111,6 +134,7 @@ public class EditActivity extends AppCompatActivity {
             case R.id.cancel:
                 break;
             case R.id.save:
+                //datasourceをシリアライズ
                 File dir = getFilesDir();
                 String fileSeparator = File.separator;
                 String filePath = dir.getAbsolutePath() + fileSeparator + adapter.getName();
@@ -132,5 +156,25 @@ public class EditActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            finish();
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onListItemClicked(int position, String selectedStr) {
+        switch (selectedStr) {
+            case "編集":
+                break;
+            case "削除":
+                adapter.removeView(position);
+                break;
+        }
+    }
 }
 

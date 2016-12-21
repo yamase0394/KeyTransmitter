@@ -2,21 +2,27 @@ package netpro.keyTransmitter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
 
-public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
+public class EditKeyViewHolder extends RecyclerView.ViewHolder {
     private TextView name;
     private TextView description;
     private View view;
     private Key key;
+    private OnRecyclerClickListener listener;
 
-    public KeyViewHolder(View itemView) {
+    public EditKeyViewHolder(View itemView) {
         super(itemView);
         CardView cardView = (CardView) itemView.findViewById(R.id.cardView);
-        cardView.setOnTouchListener(this);
-        cardView.setOnLongClickListener(this);
+        cardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (listener != null) {
+                    listener.onClickListener(getAdapterPosition(), key);
+                }
+            }
+        });
         description = (TextView) itemView.findViewById(R.id.description);
         name = (TextView) itemView.findViewById(R.id.name);
         view = itemView.findViewById(R.id.border);
@@ -34,25 +40,14 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
 
         description.setText(key.getDescription());
         name.setText(key.getName());
+
+        name.setVisibility(View.VISIBLE);
+        description.setVisibility(View.VISIBLE);
+        view.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent motionEvent) {
-        switch (motionEvent.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                key.onActionDown();
-                break;
-            case MotionEvent.ACTION_CANCEL:
-            case MotionEvent.ACTION_UP:
-                key.onActionUp();
-                break;
-        }
-        return false;
+    public void setListener(OnRecyclerClickListener listener) {
+        this.listener = listener;
     }
 
-    @Override
-    public boolean onLongClick(View view) {
-        key.onLongClick();
-        return false;
-    }
 }

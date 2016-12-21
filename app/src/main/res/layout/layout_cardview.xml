@@ -34,6 +34,7 @@
                 android:layout_weight="1"/>
 
             <View
+                android:id="@+id/border"
                 android:layout_width="match_parent"
                 android:background="@color/colorGray"
                 android:layout_height="1dp"/>
