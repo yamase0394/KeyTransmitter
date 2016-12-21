@@ -1,5 +1,6 @@
 package netpro.keyTransmitter;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -26,6 +27,7 @@ public class EditActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -46,13 +48,13 @@ public class EditActivity extends AppCompatActivity {
         List<Key> datasource = new LinkedList<>();
         File dir = getFilesDir();
         String fileSeparator = File.separator;
-        String filePath = dir.getAbsolutePath() + fileSeparator + "keyBoard.txt";
+        String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
         File file = new File(filePath);
         Log.d("main", file.toString());
         if (file.exists()) {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-                adapter = (KeyRecyclerViewAdapter) in.readObject();
+                datasource = (List<Key>) in.readObject();
                 Log.d("main", "deserialize");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -60,16 +62,15 @@ public class EditActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-
+            Log.d("main", "ない");
+            for (int i = 0; i < 14; i++) {
+                datasource.add(new EmptyKey());
+            }
+            datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
+            datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
+            datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
         }
 
-        Log.d("main", "ない");
-        for (int i = 0; i < 14; i++) {
-            datasource.add(new EmptyKey());
-        }
-        datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
-        datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
-        datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
         adapter = new KeyRecyclerViewAdapter(getApplicationContext());
         adapter.addAllView(datasource);
 
@@ -108,7 +109,6 @@ public class EditActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
             case R.id.cancel:
-                finish();
                 break;
             case R.id.save:
                 File dir = getFilesDir();
@@ -117,15 +117,18 @@ public class EditActivity extends AppCompatActivity {
                 Log.d("path", filePath);
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath));
-                    out.writeObject(adapter);
+                    out.writeObject(adapter.getDatasource());
                     out.flush();
                     out.close();
                     Log.d("main", "serialize");
+                    setResult(RESULT_OK, new Intent());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 break;
         }
+        finish();
+        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
         return super.onOptionsItemSelected(item);
     }
 

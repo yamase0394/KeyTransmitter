@@ -1,7 +1,7 @@
 package netpro.keyTransmitter;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -13,8 +13,9 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
 
     public KeyViewHolder(View itemView) {
         super(itemView);
-        itemView.setOnTouchListener(this);
-        itemView.setOnLongClickListener(this);
+        CardView cardView = (CardView) itemView.findViewById(R.id.cardView);
+        cardView.setOnTouchListener(this);
+        cardView.setOnLongClickListener(this);
         description = (TextView) itemView.findViewById(R.id.description);
         name = (TextView) itemView.findViewById(R.id.name);
         //  titleTextView = (TextView) itemView.findViewById(R.id.textView_main);
@@ -33,17 +34,16 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
-        Log.d("KeyViewHolder", motionEvent.toString());
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 key.onActionDown();
-                return true;
+                break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
                 key.onActionUp();
                 break;
         }
-        return true;
+        return false;
     }
 
     @Override

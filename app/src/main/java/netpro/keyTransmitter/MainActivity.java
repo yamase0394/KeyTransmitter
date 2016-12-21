@@ -22,6 +22,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int REQUEST_CODE = 1;
     private KeyRecyclerViewAdapter adapter;
     private static Point viewSize;
     private MyRecyclerView recyclerView;
@@ -29,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -49,13 +51,13 @@ public class MainActivity extends AppCompatActivity {
         List<Key> datasource = new LinkedList<>();
         File dir = getFilesDir();
         String fileSeparator = File.separator;
-        String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard.txt";
+        String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
         File file = new File(filePath);
         Log.d("main", file.toString());
         if (file.exists()) {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
-                adapter = (KeyRecyclerViewAdapter) in.readObject();
+                datasource = (List<Key>) in.readObject();
                 Log.d("main", "deserialize");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -70,9 +72,10 @@ public class MainActivity extends AppCompatActivity {
             datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
             datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
             datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
-            adapter = new KeyRecyclerViewAdapter(getApplicationContext());
-            adapter.addAllView(datasource);
         }
+
+        adapter = new KeyRecyclerViewAdapter(getApplicationContext());
+        adapter.addAllView(datasource);
 
         recyclerView.setAdapter(adapter);
 
@@ -138,12 +141,35 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.editMode:
-                Intent intent = new Intent(getApplicationContext(),EditActivity.class);
-                startActivity(intent);
-            default:
-                return super.onOptionsItemSelected(item);
+                Intent intent = new Intent(getApplicationContext(), EditActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            File dir = getFilesDir();
+            String fileSeparator = File.separator;
+            String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
+            File file = new File(filePath);
+            Log.d("main", file.toString());
+            if (file.exists()) {
+                try {
+                    ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
+                    List<Key> datasource = (List<Key>) in.readObject();
+                    Log.d("main", "deserialize");
+                    adapter.setDatasource(datasource);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
 

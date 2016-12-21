@@ -5,7 +5,8 @@ import android.util.Log;
 /**
  * 押している間キーコードを送信し続けるキーです
  */
-public class PressingKey extends Key {
+public class PressingKey extends Key  {
+
     private boolean running;
     private long inputInterval;
 

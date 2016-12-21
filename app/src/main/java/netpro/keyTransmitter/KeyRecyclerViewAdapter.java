@@ -9,12 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> implements Serializable {
-    private static final long serialVersionUID = 9051227485244867118L;
+public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> {
     private List<Key> datasource = new LinkedList<>();
     private int displayWidth = 720;
     //private int width = 768;
@@ -95,8 +93,13 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         return datasource;
     }
 
+    public void setDatasource(List<Key> datasource) {
+        this.datasource = datasource;
+        notifyDataSetChanged();
+    }
+
     public String getName() {
-        return "keyboard.txt";
+        return "keyboard";
     }
 
 }
