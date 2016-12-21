@@ -96,7 +96,7 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
     }
 
     public String getName() {
-        return "keyBoard.txt";
+        return "keyboard.txt";
     }
 
 }

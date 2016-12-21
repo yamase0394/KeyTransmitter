@@ -9,25 +9,29 @@ import android.widget.TextView;
 public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
     private TextView name;
     private TextView description;
-    private View.OnTouchListener listener;
     private Key key;
 
     public KeyViewHolder(View itemView) {
         super(itemView);
         itemView.setOnTouchListener(this);
         itemView.setOnLongClickListener(this);
+        description = (TextView) itemView.findViewById(R.id.description);
+        name = (TextView) itemView.findViewById(R.id.name);
         //  titleTextView = (TextView) itemView.findViewById(R.id.textView_main);
         //summaryTextView = (TextView) itemView.findViewById(R.id.textView_sub);
     }
 
     public void setKey(Key key) {
         this.key = key;
+        description.setText(key.getDescription());
+        name.setText(key.getName());
     }
 
     public void setText(String name, String description) {
         // titleTextView.setText(title.toUpperCase());
     }
 
+    @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         Log.d("KeyViewHolder", motionEvent.toString());
         switch (motionEvent.getAction()) {

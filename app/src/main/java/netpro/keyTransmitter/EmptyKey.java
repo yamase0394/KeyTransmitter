@@ -1,6 +1,8 @@
 package netpro.keyTransmitter;
 
-public class EmptyKey extends Key {
+import java.io.Serializable;
+
+public class EmptyKey extends Key implements Serializable{
 
     public EmptyKey() {
         super(1, 1, "", "", Type.EMPTY);

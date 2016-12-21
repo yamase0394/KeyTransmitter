@@ -1,7 +1,5 @@
 package netpro.keyTransmitter;
 
-import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
@@ -10,20 +8,19 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity {
 
     private KeyRecyclerViewAdapter adapter;
-    private static Point viewSize;
     private MyRecyclerView recyclerView;
 
     @Override
@@ -33,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
 
         recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
-        //ScrollController controller = new ScrollController();
-        //recyclerView.addOnItemTouchListener(controller);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new SpannedGridLayoutManager(new SpannedGridLayoutManager.GridSpanLookup() {
             @Override
@@ -49,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
         List<Key> datasource = new LinkedList<>();
         File dir = getFilesDir();
         String fileSeparator = File.separator;
-        String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard.txt";
+        String filePath = dir.getAbsolutePath() + fileSeparator + "keyBoard.txt";
         File file = new File(filePath);
         Log.d("main", file.toString());
         if (file.exists()) {
@@ -63,16 +60,18 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            Log.d("main", "ない");
-            for (int i = 0; i < 14; i++) {
-                datasource.add(new EmptyKey());
-            }
-            datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
-            datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
-            datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
-            adapter = new KeyRecyclerViewAdapter(getApplicationContext());
-            adapter.addAllView(datasource);
+
         }
+
+        Log.d("main", "ない");
+        for (int i = 0; i < 14; i++) {
+            datasource.add(new EmptyKey());
+        }
+        datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
+        datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
+        datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
+        adapter = new KeyRecyclerViewAdapter(getApplicationContext());
+        adapter.addAllView(datasource);
 
         recyclerView.setAdapter(adapter);
 
@@ -94,55 +93,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         itemDecor.attachToRecyclerView(recyclerView);
-    }
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        RelativeLayout r = (RelativeLayout) findViewById(R.id.activity_main);
-        Point point = new Point(0, 0);
-        point.set(r.getWidth(), r.getHeight());
-        viewSize = point;
-        Log.d("setViewSize", String.valueOf(point.x) + ":" + String.valueOf(point.y));
-    }
-
-
-    private class ScrollController implements RecyclerView.OnItemTouchListener {
-
-        public ScrollController() {
-        }
-
-        @Override
-        public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-            //return rv.onInterceptTouchEvent(e);
-            return false;
-        }
-
-        @Override
-        public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-        }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-        }
+        recyclerView.setEditable(true);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_edit, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.editMode:
-                Intent intent = new Intent(getApplicationContext(),EditActivity.class);
-                startActivity(intent);
-            default:
-                return super.onOptionsItemSelected(item);
+            case android.R.id.home:
+            case R.id.cancel:
+                finish();
+                break;
+            case R.id.save:
+                File dir = getFilesDir();
+                String fileSeparator = File.separator;
+                String filePath = dir.getAbsolutePath() + fileSeparator + adapter.getName();
+                Log.d("path", filePath);
+                try {
+                    ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath));
+                    out.writeObject(adapter);
+                    out.flush();
+                    out.close();
+                    Log.d("main", "serialize");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 }
