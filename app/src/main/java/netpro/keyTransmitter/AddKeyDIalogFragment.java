@@ -188,6 +188,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
                         }
                         listener.onKeyGenerated(key);
                         dismiss();
+                        return;
                     }
 
                 } catch (NumberFormatException e) {
