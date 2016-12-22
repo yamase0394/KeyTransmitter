@@ -22,7 +22,7 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener {
+public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDIalogFragment.OnKeyGeneratedListener{
 
     private EditKeyRecyclerViewAdapter adapter;
     private MyRecyclerView recyclerView;
@@ -129,6 +129,8 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             @Override
             public void onClick(View view) {
                 Log.d("edit", "add");
+                android.support.v4.app.DialogFragment dialogFragment = AddKeyDIalogFragment.newInstance();
+                dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
             }
         });
     }
@@ -187,6 +189,12 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
                 adapter.removeView(position);
                 break;
         }
+    }
+
+    @Override
+    public void onKeyGenerated(Key key) {
+        Log.d("Edit", "generated");
+
     }
 }
 

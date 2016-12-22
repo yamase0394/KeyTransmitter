@@ -10,4 +10,8 @@ public class EmptyKey extends Key implements Serializable{
         super(1, 1, "", "", Type.EMPTY);
     }
 
+    public EmptyKey(int columnSpan, int rowSpan, String name, String description, Type type) {
+        super(columnSpan, rowSpan, name, description, type);
+    }
+
 }
