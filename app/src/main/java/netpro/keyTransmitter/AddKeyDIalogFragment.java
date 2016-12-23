@@ -6,6 +6,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +29,11 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
     private OnKeyGeneratedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
 
-    public static AddKeyDIalogFragment newInstance() {
+    public static AddKeyDIalogFragment newInstance(int emptySpace) {
         AddKeyDIalogFragment fragment = new AddKeyDIalogFragment();
+        Bundle args = new Bundle();
+        args.putInt("emptySpace", emptySpace);
+        fragment.setArguments(args);
         return fragment;
     }
 
@@ -37,6 +42,88 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         final View view = View.inflate(getActivity(), R.layout.dialog_fragment_add_key, null);
 
         final TextInputLayout intervalLayout = (TextInputLayout) view.findViewById(R.id.intervalLayout);
+        intervalLayout.setVisibility(GONE);
+        intervalLayout.setErrorEnabled(true);
+        intervalLayout.setError("必須");
+        intervalLayout.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                try {
+                    Integer.parseInt(editable.toString());
+                } catch (NumberFormatException e) {
+                    intervalLayout.setErrorEnabled(true);
+                    intervalLayout.setError("必須");
+                    return;
+                }
+                intervalLayout.setErrorEnabled(false);
+            }
+        });
+
+        final TextInputLayout nameTil = (TextInputLayout) view.findViewById(R.id.nameTextInputLayout);
+        nameTil.setErrorEnabled(true);
+        nameTil.setError("必須");
+        nameTil.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
+                String str = (String) keyTypeSpinner.getSelectedItem();
+                Key.Type type = Key.Type.toType(str);
+                if (type != Key.Type.EMPTY && editable.length() == 0) {
+                    nameTil.setErrorEnabled(true);
+                    nameTil.setError("必須");
+                } else {
+                    nameTil.setErrorEnabled(false);
+                }
+            }
+        });
+
+        final TextInputLayout descriptionTil = (TextInputLayout) view.findViewById(R.id.descriptionTextInputLayout);
+        descriptionTil.setErrorEnabled(true);
+        descriptionTil.setError("必須");
+        descriptionTil.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+                Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
+                String str = (String) keyTypeSpinner.getSelectedItem();
+                Key.Type type = Key.Type.toType(str);
+                if (type != Key.Type.EMPTY && editable.length() == 0) {
+                    descriptionTil.setErrorEnabled(true);
+                    descriptionTil.setError("必須");
+                } else {
+                    descriptionTil.setErrorEnabled(false);
+                }
+            }
+        });
 
         final Spinner columnCountSpinner = (Spinner) view.findViewById(R.id.columnCountSpinner);
         Integer[] columnCounts = {1, 2, 3, 4, 5};
@@ -66,9 +153,18 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 Spinner spinner = (Spinner) adapterView;
                 String description = (String) spinner.getSelectedItem();
+                nameTil.setErrorEnabled(true);
+                nameTil.setError("必須");
+                descriptionTil.setErrorEnabled(true);
+                descriptionTil.setError("必須");
                 switch (Key.Type.toType(description)) {
                     case PRESSING:
                         intervalLayout.setVisibility(View.VISIBLE);
+                        break;
+                    case EMPTY:
+                        nameTil.setErrorEnabled(false);
+                        descriptionTil.setErrorEnabled(false);
+                        intervalLayout.setVisibility(GONE);
                         break;
                     default:
                         intervalLayout.setVisibility(GONE);
@@ -154,54 +250,60 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view2) {
-                try {
-                    EditText editName = (EditText) view.findViewById(R.id.name);
-                    String name = editName.getText().toString();
-                    EditText editDescription = (EditText) view.findViewById(R.id.description);
-                    String description = editDescription.getText().toString();
+                EditText editName = (EditText) view.findViewById(R.id.name);
+                String name = editName.getText().toString();
+                EditText editDescription = (EditText) view.findViewById(R.id.description);
+                String description = editDescription.getText().toString();
 
-                    if (name != null && description != null && keyCodeViewList.size() > 0) {
-                        int columnCount = (int) columnCountSpinner.getSelectedItem();
-                        int rowCount = (int) rowCountSpinner.getSelectedItem();
-
-                        Key.Type type = Key.Type.toType((String) keyTypeSpinner.getSelectedItem());
-                        Key key = new EmptyKey();
-                        switch (type) {
-                            case RELEASED:
-                                key = new NormalKey(columnCount, rowCount, name, description, type);
-                                break;
-                            case LONGPRESS:
-                                key = new LongPressKey(columnCount, rowCount, name, description, type);
-                                break;
-                            case PRESSING:
-                                EditText editInterval = (EditText) view.findViewById(R.id.interval);
-                                int interval = Integer.parseInt(editInterval.getText().toString());
-                                key = new PressingKey(columnCount, rowCount, name, description, type, interval);
-                                break;
-                            case EMPTY:
-                                key = new EmptyKey(columnCount, rowCount, name, description, type);
-                                break;
-                        }
-                        for (View v : keyCodeViewList) {
-                            Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
-                            key.addKeyCode((String) spinner.getSelectedItem());
-                        }
-                        listener.onKeyGenerated(key);
-                        dismiss();
-                        return;
-                    }
-
-                } catch (NumberFormatException e) {
-                } catch (NullPointerException e) {
+                if (name.length() == 0 || description.length() == 0) {
+                    showErrorDialog("入力が不完全です");
+                    return;
                 }
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle("エラー").setMessage("入力が不完全です").setPositiveButton("確認", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                int columnCount = (int) columnCountSpinner.getSelectedItem();
+                int rowCount = (int) rowCountSpinner.getSelectedItem();
 
-                    }
-                }).show();
+                if (columnCount + rowCount > getArguments().getInt("emptySpace")) {
+                    showErrorDialog("スペースが足りません");
+                    return;
+                }
+
+                Key.Type type = Key.Type.toType((String) keyTypeSpinner.getSelectedItem());
+                Key key = new EmptyKey();
+                switch (type) {
+                    case RELEASED:
+                        key = new NormalKey(columnCount, rowCount, name, description, type);
+                        break;
+                    case LONGPRESS:
+                        key = new LongPressKey(columnCount, rowCount, name, description, type);
+                        break;
+                    case PRESSING:
+                        EditText editInterval = (EditText) view.findViewById(R.id.interval);
+                        int interval;
+                        try {
+                            interval = Integer.parseInt(editInterval.getText().toString());
+                        } catch (NumberFormatException e) {
+                            showErrorDialog("入力が不完全です");
+                            return;
+                        }
+                        key = new PressingKey(columnCount, rowCount, name, description, type, interval);
+                        break;
+                    case EMPTY:
+                        key = new EmptyKey(columnCount, rowCount, name, description, type);
+                        break;
+                }
+
+                if (!(key instanceof EmptyKey) && keyCodeViewList.size() <= 0) {
+                    showErrorDialog("少なくとも1つの入力キーが必要です");
+                    return;
+                }
+
+                for (View v : keyCodeViewList) {
+                    Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
+                    key.addKeyCode((String) spinner.getSelectedItem());
+                }
+                listener.onKeyGenerated(key);
+                dismiss();
             }
         });
 
@@ -216,6 +318,11 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("キー生成").setView(view);
         return builder.create();
+    }
+
+    private void showErrorDialog(String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("エラー").setMessage(message).setPositiveButton("確認", null).show();
     }
 
     @Override

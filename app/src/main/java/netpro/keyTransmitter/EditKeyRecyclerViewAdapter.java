@@ -105,4 +105,14 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
     public void setOnRecyclerClickListener(OnRecyclerClickListener listener) {
         this.listener = listener;
     }
+
+    public int getEmptySpace() {
+        int emptySpace = 0;
+        for (Key key : datasource) {
+            if (key instanceof EmptyKey) {
+                emptySpace += key.getColumnSpan() * key.getRowSpan();
+            }
+        }
+        return emptySpace;
+    }
 }
