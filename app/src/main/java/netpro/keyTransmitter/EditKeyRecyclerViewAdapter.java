@@ -3,7 +3,6 @@ package netpro.keyTransmitter;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,16 +65,20 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
         notifyItemRangeInserted(preSize, list.size() - 1);
     }
 
-    public void removeView(int index) {
+    public void removeView(int index, boolean fillsEmpty) {
         Key target = datasource.get(index);
-        int keySize = target.getColumnSpan() * target.getRowSpan();
         datasource.remove(index);
         notifyItemRemoved(index);
+
+        if(!fillsEmpty){
+            return;
+        }
+
+        int keySize = target.getColumnSpan() * target.getRowSpan();
         for (int i = 0; i < keySize; i++) {
             addView(new EmptyKey());
             notifyItemInserted(datasource.size() - 1);
         }
-        Log.d("remove", String.valueOf(index));
     }
 
     public void move(int fromIndex, int toIndex) {

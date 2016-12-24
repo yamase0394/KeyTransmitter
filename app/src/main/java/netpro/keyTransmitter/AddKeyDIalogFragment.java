@@ -254,19 +254,8 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
                 String name = editName.getText().toString();
                 EditText editDescription = (EditText) view.findViewById(R.id.description);
                 String description = editDescription.getText().toString();
-
-                if (name.length() == 0 || description.length() == 0) {
-                    showErrorDialog("入力が不完全です");
-                    return;
-                }
-
                 int columnCount = (int) columnCountSpinner.getSelectedItem();
                 int rowCount = (int) rowCountSpinner.getSelectedItem();
-
-                if (columnCount + rowCount > getArguments().getInt("emptySpace")) {
-                    showErrorDialog("スペースが足りません");
-                    return;
-                }
 
                 Key.Type type = Key.Type.toType((String) keyTypeSpinner.getSelectedItem());
                 Key key = new EmptyKey();
@@ -293,8 +282,20 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
                         break;
                 }
 
-                if (!(key instanceof EmptyKey) && keyCodeViewList.size() <= 0) {
-                    showErrorDialog("少なくとも1つの入力キーが必要です");
+                if (!(key instanceof EmptyKey)) {
+                    if (name.length() == 0 || description.length() == 0) {
+                        showErrorDialog("入力が不完全です");
+                        return;
+                    }
+
+                    if (keyCodeViewList.size() <= 0) {
+                        showErrorDialog("少なくとも1つの入力キーが必要です");
+                        return;
+                    }
+                }
+
+                if (columnCount * rowCount > getArguments().getInt("emptySpace")) {
+                    showErrorDialog("スペースが足りません");
                     return;
                 }
 
@@ -351,10 +352,6 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         dismiss();
     }
 
-    public interface OnKeyGeneratedListener {
-        public void onKeyGenerated(Key key);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -364,4 +361,9 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
             throw new RuntimeException(context.toString() + " must implement OnKeyGeneratedListener");
         }
     }
+
+    public interface OnKeyGeneratedListener {
+        public void onKeyGenerated(Key key);
+    }
+
 }

@@ -22,7 +22,7 @@ import java.io.ObjectOutputStream;
 import java.util.LinkedList;
 import java.util.List;
 
-public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDIalogFragment.OnKeyGeneratedListener{
+public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDIalogFragment.OnKeyGeneratedListener {
 
     private EditKeyRecyclerViewAdapter adapter;
     private MyRecyclerView recyclerView;
@@ -82,9 +82,11 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             public void onClickListener(final int position, Key key) {
                 Log.d("click", String.valueOf(position));
 
+                /*
                 if (key instanceof EmptyKey) {
                     return;
                 }
+                */
 
                 android.support.v4.app.DialogFragment dialogFragment = EditMenuDialogFragment.newInstance(position, key.getName(), key.getDescription());
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
@@ -186,15 +188,35 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             case "編集":
                 break;
             case "削除":
-                adapter.removeView(position);
+                adapter.removeView(position, true);
                 break;
         }
     }
 
     @Override
     public void onKeyGenerated(Key key) {
-        Log.d("Edit", "generated");
-
+        int keySize = key.getColumnSpan() * key.getRowSpan();
+        Log.d("keySize", String.valueOf(keySize));
+        for (int i = 0; i < adapter.getItemCount(); i++) {
+            if (adapter.get(i) instanceof EmptyKey) {
+                Log.d("remove", "1");
+                keySize -= adapter.get(i).getColumnSpan() * adapter.get(i).getRowSpan();
+                adapter.removeView(i, false);
+                i--;
+            }
+            if (keySize == 0) {
+                adapter.addView(key);
+                break;
+            }
+            if (keySize < 0) {
+                keySize *= -1;
+                for (int j = 0; j < keySize ; j++) {
+                    adapter.addView(new EmptyKey());
+                }
+                adapter.addView(key);
+                break;
+            }
+        }
     }
 }
 
