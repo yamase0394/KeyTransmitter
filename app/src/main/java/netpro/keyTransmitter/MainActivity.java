@@ -1,14 +1,12 @@
 package netpro.keyTransmitter;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.RelativeLayout;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,15 +17,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 1;
+    private static final int EDIT_REQUEST_CODE = 1;
     private KeyRecyclerViewAdapter adapter;
-    private static Point viewSize;
     private MyRecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -68,23 +64,11 @@ public class MainActivity extends AppCompatActivity {
             datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
             datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
         }
-
         adapter = new KeyRecyclerViewAdapter(getApplicationContext());
         adapter.addAllView(datasource);
-
         recyclerView.setAdapter(adapter);
 
-        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 1, 1, 0));
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        RelativeLayout r = (RelativeLayout) findViewById(R.id.activity_main);
-        Point point = new Point(0, 0);
-        point.set(r.getWidth(), r.getHeight());
-        viewSize = point;
-        Log.d("setViewSize", String.valueOf(point.x) + ":" + String.valueOf(point.y));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
     }
 
     @Override
@@ -98,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.editMode:
                 Intent intent = new Intent(getApplicationContext(), EditActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
+                startActivityForResult(intent, EDIT_REQUEST_CODE);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }
@@ -107,18 +91,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+        //EditActivityでの編集結果を反映
+        if (resultCode == RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
             File dir = getFilesDir();
-            String fileSeparator = File.separator;
-            String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
+            String filePath = dir.getAbsolutePath() + File.separator + "keyboard";
             File file = new File(filePath);
-            Log.d("main", file.toString());
             if (file.exists()) {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
                     List<Key> datasource = (List<Key>) in.readObject();
-                    Log.d("main", "deserialize");
+                    adapter = new KeyRecyclerViewAdapter(getApplicationContext());
                     adapter.setDatasource(datasource);
+                    recyclerView.swapAdapter(adapter,false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {

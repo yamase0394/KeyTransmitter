@@ -82,12 +82,6 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             public void onClickListener(final int position, Key key) {
                 Log.d("click", String.valueOf(position));
 
-                /*
-                if (key instanceof EmptyKey) {
-                    return;
-                }
-                */
-
                 android.support.v4.app.DialogFragment dialogFragment = EditMenuDialogFragment.newInstance(position, key.getName(), key.getDescription());
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
             }
@@ -96,7 +90,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
         recyclerView.setAdapter(adapter);
 
         //子View間の幅を設定する
-        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 1, 1, 0));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
 
         //子Viewをドラッグで移動できるようにする
         ItemTouchHelper itemDecor = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
@@ -108,6 +102,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
                 return true;
             }
 
+            //スワイプできないようにする
             @Override
             public int getSwipeDirs(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
                 if (viewHolder instanceof EditKeyViewHolder) {
@@ -196,18 +191,23 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
     @Override
     public void onKeyGenerated(Key key) {
         int keySize = key.getColumnSpan() * key.getRowSpan();
-        Log.d("keySize", String.valueOf(keySize));
+
+        //keySize分のEmptyKeyを削除する
         for (int i = 0; i < adapter.getItemCount(); i++) {
             if (adapter.get(i) instanceof EmptyKey) {
-                Log.d("remove", "1");
-                keySize -= adapter.get(i).getColumnSpan() * adapter.get(i).getRowSpan();
+                Key empty = adapter.get(i);
+                keySize -= empty.getColumnSpan() * empty.getRowSpan();
                 adapter.removeView(i, false);
+                //削除された要素の位置を詰めてしまうのでインデックスを巻き戻す
                 i--;
             }
+
             if (keySize == 0) {
                 adapter.addView(key);
                 break;
             }
+
+            //EmptyKeyのサイズが1ではない場合、余分に削除してしまうのでサイズ1のEmptyKeyで埋める
             if (keySize < 0) {
                 keySize *= -1;
                 for (int j = 0; j < keySize ; j++) {

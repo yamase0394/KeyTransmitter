@@ -2,11 +2,9 @@ package netpro.keyTransmitter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,21 +28,7 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
 
     @Override
     public void onBindViewHolder(EditKeyViewHolder view, int position) {
-        //Keyのサイズを画面のサイズに合わせて変更
         Key key = datasource.get(position);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.width = (displayWidth - displayWidth / 8) / 4 * key.getColumnSpan();
-        params.height = (displayWidth - displayWidth / 8) / 4 * key.getRowSpan();
-
-        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
-        if (key.getColumnSpan() > 1) {
-            params.width += (key.getColumnSpan() - 1) * (10 * metrics.density);
-        }
-        if (key.getRowSpan() > 1) {
-            params.height += (key.getRowSpan() - 1) * (10 * metrics.density);
-        }
-
-        view.itemView.setLayoutParams(params);
         view.setKey(key);
         view.setListener(listener);
     }
