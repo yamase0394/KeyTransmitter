@@ -31,6 +31,12 @@ public class PressingKey extends Key  {
         running = false;
     }
 
+    @Override
+    public void onCancel() {
+        Log.d("pressing", "ヤメロォ");
+        running = false;
+    }
+
     public long getInputInterval() {
         return inputInterval;
     }

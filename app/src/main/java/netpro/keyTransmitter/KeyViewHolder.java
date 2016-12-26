@@ -25,7 +25,7 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
     public void setKey(Key key) {
         this.key = key;
 
-        if(key instanceof EmptyKey){
+        if (key instanceof EmptyKey) {
             name.setVisibility(View.INVISIBLE);
             description.setVisibility(View.INVISIBLE);
             view.setVisibility(View.INVISIBLE);
@@ -43,6 +43,8 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
                 key.onActionDown();
                 break;
             case MotionEvent.ACTION_CANCEL:
+                key.onCancel();
+                break;
             case MotionEvent.ACTION_UP:
                 key.onActionUp();
                 break;

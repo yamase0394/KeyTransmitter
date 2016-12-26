@@ -18,7 +18,7 @@ public abstract class Key implements Serializable {
         EMPTY("何もしない");
 
         private String description;
-        private static Map<String,Type> toTypeMap = new HashMap<>();
+        private static Map<String, Type> toTypeMap = new HashMap<>();
 
         static {
             for (Type type : values()) {
@@ -26,7 +26,7 @@ public abstract class Key implements Serializable {
             }
         }
 
-        Type(String description){
+        Type(String description) {
             this.description = description;
         }
 
@@ -94,14 +94,14 @@ public abstract class Key implements Serializable {
     }
 
     public void onActionDown() {
-
     }
 
     public void onActionUp() {
-
     }
 
     public void onLongClick() {
+    }
 
+    public void onCancel() {
     }
 }

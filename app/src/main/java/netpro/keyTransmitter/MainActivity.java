@@ -40,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
         }, 4, 1f));
 
         List<Key> datasource = new LinkedList<>();
-        File dir = getFilesDir();String filePath = dir.getAbsolutePath() +  File.separator + "keyboard";
+        File dir = getFilesDir();
+        String filePath = dir.getAbsolutePath() + File.separator + "keyboard";
         File file = new File(filePath);
         if (file.exists()) {
             try {
@@ -65,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
+
+        recyclerView.setEditable(true);
     }
 
     @Override
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     List<Key> datasource = (List<Key>) in.readObject();
                     adapter = new KeyRecyclerViewAdapter(getApplicationContext());
                     adapter.setDatasource(datasource);
-                    recyclerView.swapAdapter(adapter,false);
+                    recyclerView.swapAdapter(adapter, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (ClassNotFoundException e) {
