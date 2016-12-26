@@ -41,6 +41,11 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
         notifyItemInserted(getItemCount() - 1);
     }
 
+    public void addView(int index, Key key) {
+        datasource.add(index, key);
+        notifyItemInserted(index);
+    }
+
     public void addAllView(List<Key> list) {
         int preSize = getItemCount();
         datasource.addAll(list);
@@ -52,7 +57,7 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
         datasource.remove(index);
         notifyItemRemoved(index);
 
-        if(!fillsEmpty){
+        if (!fillsEmpty) {
             return;
         }
 

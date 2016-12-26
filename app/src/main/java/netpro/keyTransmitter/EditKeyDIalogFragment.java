@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.view.View.GONE;
@@ -29,10 +30,11 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
     private OnKeyUpdatedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
 
-    public static EditKeyDIalogFragment newInstance(int emptySpace, Key key) {
+    public static EditKeyDIalogFragment newInstance(int position, int emptySpace, Key key) {
         EditKeyDIalogFragment fragment = new EditKeyDIalogFragment();
         Bundle args = new Bundle();
-        args.putInt("emptySpace", emptySpace);
+        args.putInt("position", position);
+        args.putInt("emptySpace", emptySpace + key.getColumnSpan() * key.getRowSpan());
         args.putSerializable("key", key);
         fragment.setArguments(args);
         return fragment;
@@ -130,8 +132,6 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
             }
         });
 
-        final LinearLayout addKeyLayout = (LinearLayout) view.findViewById(R.id.addKeyLayout);
-
         final Spinner columnCountSpinner = (Spinner) view.findViewById(R.id.columnCountSpinner);
         Integer[] columnCounts = {1, 2, 3, 4, 5};
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, columnCounts);
@@ -152,10 +152,10 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
         for (int i = 0; i < keyDescriptions.length; i++) {
             keyDescriptions[i] = keyTypes[i].getDescription();
         }
-
         ArrayAdapter<String> keyAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, keyDescriptions);
         keyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         keyTypeSpinner.setAdapter(keyAdapter);
+        final LinearLayout addKeyLayout = (LinearLayout) view.findViewById(R.id.addKeyLayout);
         keyTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -196,7 +196,63 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
         });
         keyTypeSpinner.setSelection(key.getType().ordinal());
 
-        final LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.keyCodesLayout);
+        final List<String> alphabetList = new ArrayList<>();
+        final int ALPHABET_SIZE = 'Z' - 'A';
+        char alphabet = 'A';
+        for (int i = 0; i <= ALPHABET_SIZE; i++) {
+            alphabetList.add(String.valueOf(alphabet++));
+        }
+
+        final List<String> numberList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            numberList.add(String.valueOf(i));
+        }
+
+        final List<String> controlKeyList = Arrays.asList("BackSpace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp" + "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab");
+
+        final List<String> functionKeyList = new ArrayList<>();
+        for (int i = 1; i <= 12; i++) {
+            functionKeyList.add("F" + String.valueOf(i));
+        }
+
+        final List<String> symbolList = Arrays.asList(":*", ";+", ",<", "-=", ".>", "/?", "@`", "[{", "\\|", "]}", "^~", "\\_");
+
+        final LinearLayout keyCodesLayout = (LinearLayout) view.findViewById(R.id.keyCodesLayout);
+        for (String keyCode : key.getKeyCodeList()) {
+            List<String> spinnerContents = new ArrayList<>();
+            if (alphabetList.contains(keyCode)) {
+                spinnerContents = alphabetList;
+            } else if (numberList.contains(keyCode)) {
+                spinnerContents = numberList;
+            } else if (controlKeyList.contains(keyCode)) {
+                spinnerContents = controlKeyList;
+            } else if (functionKeyList.contains(keyCode)) {
+                spinnerContents = functionKeyList;
+            } else if (symbolList.contains(keyCode)) {
+                spinnerContents = symbolList;
+            }
+
+            View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+            Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, spinnerContents);
+
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(arrayAdapter);
+            spinner.setSelection(arrayAdapter.getPosition(keyCode));
+
+            Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+            removeButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ViewGroup parent = (ViewGroup) view.getParent();
+                    keyCodeViewList.remove(parent);
+                    parent.removeAllViews();
+                }
+            });
+            keyCodesLayout.addView(addKeyCodeView);
+            keyCodeViewList.add(addKeyCodeView);
+        }
 
         final Button addButton = (Button) view.findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -216,31 +272,23 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
                         switch (which) {
                             //アルファベット
                             case 0:
-                                final int ALPHABET_SIZE = 'Z' - 'A';
-                                char alphabet = 'A';
-                                for (int i = 0; i <= ALPHABET_SIZE; i++) {
-                                    adapter.add(String.valueOf(alphabet++));
-                                }
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, alphabetList);
                                 break;
                             //数字
                             case 1:
-                                for (int i = 0; i < 10; i++) {
-                                    adapter.add(String.valueOf(i));
-                                }
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, numberList);
                                 break;
                             //制御キー
                             case 2:
-                                adapter.addAll("BackSpace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp" + "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab");
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, controlKeyList);
                                 break;
                             //ファンクションキー
                             case 3:
-                                for (int i = 1; i <= 12; i++) {
-                                    adapter.add("F" + String.valueOf(i));
-                                }
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functionKeyList);
                                 break;
                             //記号
                             case 4:
-                                adapter.addAll(":*", ";+", ",<", "-=", ".>", "/?", "@`", "[{", "\\|", "]}", "^~", "\\_");
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, symbolList);
                                 break;
                         }
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -256,7 +304,7 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
                                 parent.removeAllViews();
                             }
                         });
-                        linearLayout.addView(addKeyCodeView);
+                        keyCodesLayout.addView(addKeyCodeView);
                         keyCodeViewList.add(addKeyCodeView);
                     }
                 });
@@ -319,12 +367,14 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
                     }
                 }
 
+
                 if (columnCount * rowCount > getArguments().getInt("emptySpace")) {
-                    showErrorDialog("スペースが足りません");
+                    int shortage = columnCount * rowCount - getArguments().getInt("emptySpace");
+                    showErrorDialog("スペースが " + shortage + "足りません");
                     return;
                 }
 
-                listener.onKeyUpdated(key);
+                listener.onKeyUpdated(getArguments().getInt("position"), key);
                 dismiss();
             }
         });
@@ -384,7 +434,7 @@ public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment
     }
 
     public interface OnKeyUpdatedListener {
-        void onKeyUpdated(Key key);
+        void onKeyUpdated(int position, Key key);
     }
 
 }

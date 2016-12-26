@@ -143,7 +143,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             case R.id.save:
                 //datasourceをシリアライズ
                 File dir = getFilesDir();
-                String filePath = dir.getAbsolutePath() +  File.separator + adapter.getName();
+                String filePath = dir.getAbsolutePath() + File.separator + adapter.getName();
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath));
                     out.writeObject(adapter.getDatasource());
@@ -175,7 +175,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
     public void onListItemClicked(int position, String selectedStr) {
         switch (selectedStr) {
             case "編集":
-                android.support.v4.app.DialogFragment dialogFragment = EditKeyDIalogFragment.newInstance(adapter.getEmptySpace(), adapter.get(position));
+                android.support.v4.app.DialogFragment dialogFragment = EditKeyDIalogFragment.newInstance(position, adapter.getEmptySpace(), adapter.get(position));
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
                 break;
             case "削除":
@@ -206,7 +206,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             //EmptyKeyのサイズが1ではない場合、余分に削除してしまうのでサイズ1のEmptyKeyで埋める
             if (keySize < 0) {
                 keySize *= -1;
-                for (int j = 0; j < keySize ; j++) {
+                for (int j = 0; j < keySize; j++) {
                     adapter.addView(new EmptyKey());
                 }
                 adapter.addView(key);
@@ -216,8 +216,33 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
     }
 
     @Override
-    public void onKeyUpdated(Key key) {
-        Log.d("updated", key.getName());
+    public void onKeyUpdated(int position, Key key) {
+        adapter.removeView(position, true);
+
+        int keySize = key.getColumnSpan() * key.getRowSpan();
+        //keySize分のEmptyKeyを削除する
+        for (int i = adapter.getItemCount()-1; i >= 0; i--) {
+            if (adapter.get(i) instanceof EmptyKey) {
+                Key empty = adapter.get(i);
+                keySize -= empty.getColumnSpan() * empty.getRowSpan();
+                adapter.removeView(i, false);
+            }
+
+            if (keySize == 0) {
+                adapter.addView(position, key);
+                break;
+            }
+
+            //EmptyKeyのサイズが1ではない場合、余分に削除してしまうのでサイズ1のEmptyKeyで埋める
+            if (keySize < 0) {
+                keySize *= -1;
+                for (int j = 0; j < keySize; j++) {
+                    adapter.addView(new EmptyKey());
+                }
+                adapter.addView(position, key);
+                break;
+            }
+        }
     }
 }
 

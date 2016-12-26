@@ -315,7 +315,8 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
                 }
 
                 if (columnCount * rowCount > getArguments().getInt("emptySpace")) {
-                    showErrorDialog("スペースが足りません");
+                    int shortage = columnCount * rowCount - getArguments().getInt("emptySpace");
+                    showErrorDialog("スペースが " + shortage + "足りません");
                     return;
                 }
 
@@ -379,7 +380,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
     }
 
     public interface OnKeyGeneratedListener {
-        public void onKeyGenerated(Key key);
+         void onKeyGenerated(Key key);
     }
 
 }

@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/keyCodeSpinner"
         app:layout_widthPercent="50%"
-        />
+        android:spinnerMode="dialog"/>
 
     <Button
         android:layout_height="wrap_content"
