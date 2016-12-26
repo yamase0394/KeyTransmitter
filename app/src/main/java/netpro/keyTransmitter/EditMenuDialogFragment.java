@@ -64,7 +64,6 @@ public class EditMenuDialogFragment extends android.support.v4.app.DialogFragmen
         dialog.getWindow().setAttributes(layoutParams);
     }
 
-
     @Override
     public void onPause() {
         super.onPause();
@@ -72,7 +71,7 @@ public class EditMenuDialogFragment extends android.support.v4.app.DialogFragmen
     }
 
     public interface OnListItemClickListener {
-        public void onListItemClicked(int positionm, String selectedStr);
+        void onListItemClicked(int positionm, String selectedStr);
     }
 
     @Override

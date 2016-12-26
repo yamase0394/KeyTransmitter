@@ -24,27 +24,34 @@ import java.util.List;
 
 import static android.view.View.GONE;
 
-public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment {
+public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment {
 
-    private OnKeyGeneratedListener listener;
+    private OnKeyUpdatedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
 
-    public static AddKeyDIalogFragment newInstance(int emptySpace) {
-        AddKeyDIalogFragment fragment = new AddKeyDIalogFragment();
+    public static EditKeyDIalogFragment newInstance(int emptySpace, Key key) {
+        EditKeyDIalogFragment fragment = new EditKeyDIalogFragment();
         Bundle args = new Bundle();
         args.putInt("emptySpace", emptySpace);
+        args.putSerializable("key", key);
         fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
-        final View view = View.inflate(getActivity(), R.layout.dialog_fragment_add_key, null);
+        final View view = View.inflate(getActivity(), R.layout.dialog_fragment_edit_key, null);
+        Key key = (Key) getArguments().getSerializable("key");
 
         final TextInputLayout intervalLayout = (TextInputLayout) view.findViewById(R.id.intervalLayout);
-        intervalLayout.setVisibility(GONE);
         intervalLayout.setErrorEnabled(true);
         intervalLayout.setError("必須");
+        if (key instanceof PressingKey) {
+            intervalLayout.getEditText().setText(String.valueOf(((PressingKey) key).getInputInterval()));
+            intervalLayout.setErrorEnabled(false);
+        } else {
+            intervalLayout.setVisibility(GONE);
+        }
         intervalLayout.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -70,8 +77,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         });
 
         final TextInputLayout nameTil = (TextInputLayout) view.findViewById(R.id.nameTextInputLayout);
-        nameTil.setErrorEnabled(true);
-        nameTil.setError("必須");
+        nameTil.getEditText().setText(key.getName());
         nameTil.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -98,8 +104,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         });
 
         final TextInputLayout descriptionTil = (TextInputLayout) view.findViewById(R.id.descriptionTextInputLayout);
-        descriptionTil.setErrorEnabled(true);
-        descriptionTil.setError("必須");
+        descriptionTil.getEditText().setText(key.getDescription());
         descriptionTil.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -132,14 +137,14 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         ArrayAdapter<Integer> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, columnCounts);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         columnCountSpinner.setAdapter(adapter);
-        columnCountSpinner.setSelection(0);
+        columnCountSpinner.setSelection(key.getColumnSpan() - 1);
 
         final Spinner rowCountSpinner = (Spinner) view.findViewById(R.id.rowCountSpinner);
         Integer[] rowCounts = {1, 2, 3, 4};
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, rowCounts);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         rowCountSpinner.setAdapter(adapter);
-        rowCountSpinner.setSelection(0);
+        rowCountSpinner.setSelection(key.getRowSpan() - 1);
 
         final Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
         Key.Type[] keyTypes = Key.Type.values();
@@ -189,7 +194,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
 
             }
         });
-        keyTypeSpinner.setSelection(0);
+        keyTypeSpinner.setSelection(key.getType().ordinal());
 
         final LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.keyCodesLayout);
 
@@ -319,7 +324,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
                     return;
                 }
 
-                listener.onKeyGenerated(key);
+                listener.onKeyUpdated(key);
                 dismiss();
             }
         });
@@ -333,7 +338,7 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("キー生成").setView(view);
+        builder.setTitle("キー編集").setView(view);
         return builder.create();
     }
 
@@ -371,15 +376,15 @@ public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnKeyGeneratedListener) {
-            listener = (OnKeyGeneratedListener) context;
+        if (context instanceof OnKeyUpdatedListener) {
+            listener = (OnKeyUpdatedListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnKeyGeneratedListener");
+            throw new RuntimeException(context.toString() + " must implement OnKeyUpdatedListener");
         }
     }
 
-    public interface OnKeyGeneratedListener {
-        public void onKeyGenerated(Key key);
+    public interface OnKeyUpdatedListener {
+        void onKeyUpdated(Key key);
     }
 
 }

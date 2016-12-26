@@ -11,8 +11,6 @@ import java.util.List;
 
 public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyViewHolder> {
     private List<Key> datasource = new LinkedList<>();
-    private int displayWidth = 720;
-    //private int width = 768;
     private Context context;
     private OnRecyclerClickListener listener;
 

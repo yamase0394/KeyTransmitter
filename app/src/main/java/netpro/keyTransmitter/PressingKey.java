@@ -31,6 +31,9 @@ public class PressingKey extends Key  {
         running = false;
     }
 
+    public long getInputInterval() {
+        return inputInterval;
+    }
 
     private class Executer implements Runnable {
         @Override

@@ -26,7 +26,7 @@ public abstract class Key implements Serializable {
             }
         }
 
-        private Type(String description){
+        Type(String description){
             this.description = description;
         }
 

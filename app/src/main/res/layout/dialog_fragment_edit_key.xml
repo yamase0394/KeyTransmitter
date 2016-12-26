@@ -26,8 +26,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 app:errorTextAppearance="@style/errorText"
-                android:id="@+id/nameTextInputLayout"
-                app:errorEnabled="true">
+                android:id="@+id/nameTextInputLayout">
 
                 <android.support.design.widget.TextInputEditText
                     android:layout_width="match_parent"
@@ -223,7 +222,7 @@
                     android:layout_weight="1"/>
 
                 <Button
-                    android:text="生成"
+                    android:text="更新"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/createButton"

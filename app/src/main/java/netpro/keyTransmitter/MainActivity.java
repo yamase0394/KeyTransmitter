@@ -40,11 +40,8 @@ public class MainActivity extends AppCompatActivity {
         }, 4, 1f));
 
         List<Key> datasource = new LinkedList<>();
-        File dir = getFilesDir();
-        String fileSeparator = File.separator;
-        String filePath = dir.getAbsolutePath() + fileSeparator + "keyboard";
+        File dir = getFilesDir();String filePath = dir.getAbsolutePath() +  File.separator + "keyboard";
         File file = new File(filePath);
-        Log.d("main", file.toString());
         if (file.exists()) {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
@@ -56,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            Log.d("main", "ない");
             for (int i = 0; i < 14; i++) {
                 datasource.add(new EmptyKey());
             }
