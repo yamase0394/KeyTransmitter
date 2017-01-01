@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -25,13 +25,13 @@ import java.util.List;
 
 import static android.view.View.GONE;
 
-public class EditKeyDIalogFragment extends android.support.v4.app.DialogFragment {
+public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment {
 
     private OnKeyUpdatedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
 
-    public static EditKeyDIalogFragment newInstance(int position, int emptySpace, Key key) {
-        EditKeyDIalogFragment fragment = new EditKeyDIalogFragment();
+    public static EditKeyDialogFragment newInstance(int position, int emptySpace, Key key) {
+        EditKeyDialogFragment fragment = new EditKeyDialogFragment();
         Bundle args = new Bundle();
         args.putInt("position", position);
         args.putInt("emptySpace", emptySpace + key.getColumnSpan() * key.getRowSpan());

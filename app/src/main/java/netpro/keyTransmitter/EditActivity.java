@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,13 +19,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDIalogFragment.OnKeyGeneratedListener, EditKeyDIalogFragment.OnKeyUpdatedListener {
+public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDialogFragment.OnKeyGeneratedListener, EditKeyDialogFragment.OnKeyUpdatedListener {
 
     private EditKeyRecyclerViewAdapter adapter;
-    private MyRecyclerView recyclerView;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +38,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setTitle("編集モード");
 
-        recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new SpannedGridLayoutManager(new SpannedGridLayoutManager.GridSpanLookup() {
             @Override
@@ -49,7 +49,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
         }, 4, 1f));
 
         //RecyclerViewに登録するデータの初期化
-        List<Key> datasource = new LinkedList<>();
+        List<Key> datasource = new ArrayList<>();
         File dir = getFilesDir();
         String filePath = dir.getAbsolutePath() + File.separator + "keyboard";
         File file = new File(filePath);
@@ -113,16 +113,13 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
         });
         itemDecor.attachToRecyclerView(recyclerView);
 
-        //編集モード
-        recyclerView.setEditable(true);
-
         //キー追加ボタン
         FloatingActionButton button = (FloatingActionButton) findViewById(R.id.addViewButton);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d("edit", "add");
-                android.support.v4.app.DialogFragment dialogFragment = AddKeyDIalogFragment.newInstance(adapter.getEmptySpace());
+                android.support.v4.app.DialogFragment dialogFragment = AddKeyDialogFragment.newInstance(adapter.getEmptySpace());
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
             }
         });
@@ -175,7 +172,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
     public void onListItemClicked(int position, String selectedStr) {
         switch (selectedStr) {
             case "編集":
-                android.support.v4.app.DialogFragment dialogFragment = EditKeyDIalogFragment.newInstance(position, adapter.getEmptySpace(), adapter.get(position));
+                android.support.v4.app.DialogFragment dialogFragment = EditKeyDialogFragment.newInstance(position, adapter.getEmptySpace(), adapter.get(position));
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
                 break;
             case "削除":

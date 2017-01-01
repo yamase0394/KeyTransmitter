@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -24,13 +24,13 @@ import java.util.List;
 
 import static android.view.View.GONE;
 
-public class AddKeyDIalogFragment extends android.support.v4.app.DialogFragment {
+public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment {
 
     private OnKeyGeneratedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
 
-    public static AddKeyDIalogFragment newInstance(int emptySpace) {
-        AddKeyDIalogFragment fragment = new AddKeyDIalogFragment();
+    public static AddKeyDialogFragment newInstance(int emptySpace) {
+        AddKeyDialogFragment fragment = new AddKeyDialogFragment();
         Bundle args = new Bundle();
         args.putInt("emptySpace", emptySpace);
         fragment.setArguments(args);

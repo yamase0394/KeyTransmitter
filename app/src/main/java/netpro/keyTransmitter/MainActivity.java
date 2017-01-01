@@ -1,8 +1,9 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -12,14 +13,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int EDIT_REQUEST_CODE = 1;
     private KeyRecyclerViewAdapter adapter;
-    private MyRecyclerView recyclerView;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        recyclerView = (MyRecyclerView) findViewById(R.id.recyclerview);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(new SpannedGridLayoutManager(new SpannedGridLayoutManager.GridSpanLookup() {
             @Override
@@ -39,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }, 4, 1f));
 
-        List<Key> datasource = new LinkedList<>();
+        List<Key> datasource = new ArrayList<>();
         File dir = getFilesDir();
         String filePath = dir.getAbsolutePath() + File.separator + "keyboard";
         File file = new File(filePath);
@@ -66,8 +67,6 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
-
-        recyclerView.setEditable(true);
     }
 
     @Override

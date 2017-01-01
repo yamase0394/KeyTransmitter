@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

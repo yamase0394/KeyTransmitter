@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.content.Context;
 import android.content.res.TypedArray;

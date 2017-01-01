@@ -1,4 +1,4 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import java.io.Serializable;
 import java.util.ArrayList;

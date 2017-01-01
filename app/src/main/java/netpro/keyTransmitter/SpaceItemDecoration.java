@@ -1,11 +1,11 @@
-package netpro.keyTransmitter;
+package netpro.keytransmitter;
 
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * RecyclerViewの子View間のスペースを設定するクラスです
+ * RecyclerViewの子View間のスペースを設定するクラス
  */
 public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
 
