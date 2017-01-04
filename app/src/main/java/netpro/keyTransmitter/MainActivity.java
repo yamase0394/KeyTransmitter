@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < 14; i++) {
                 datasource.add(new EmptyKey());
             }
-            datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
-            datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
-            datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
+            datasource.add(new NormalKey(2, 1,  "ああああああ", Key.Type.RELEASED));
+            datasource.add(new NormalKey(1, 3, "エンター", Key.Type.RELEASED));
+            datasource.add(new PressingKey(1, 1,"aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
         }
         adapter = new KeyRecyclerViewAdapter(getApplicationContext());
         adapter.addAllView(datasource);

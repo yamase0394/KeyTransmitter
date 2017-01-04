@@ -43,10 +43,26 @@
                 android:text="TextViewaaaaaaaaaaaaaaaaa"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/name"
+                android:id="@+id/key_name"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:gravity="center_horizontal"/>
+
+            <View
+                android:id="@+id/border_type"
+                android:layout_width="match_parent"
+                android:background="@color/colorGray"
+                android:layout_height="1dp"/>
+
+            <TextView
+                android:text="TextViewaaaaaaaaaaaaaaaaa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/type"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="center_horizontal"/>
+
 
         </LinearLayout>
 

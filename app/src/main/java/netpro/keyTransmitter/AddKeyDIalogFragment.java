@@ -69,34 +69,6 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
             }
         });
 
-        final TextInputLayout nameTil = (TextInputLayout) view.findViewById(R.id.nameTextInputLayout);
-        nameTil.setErrorEnabled(true);
-        nameTil.setError("必須");
-        nameTil.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
-                String str = (String) keyTypeSpinner.getSelectedItem();
-                Key.Type type = Key.Type.toType(str);
-                if (type != Key.Type.EMPTY && editable.length() == 0) {
-                    nameTil.setErrorEnabled(true);
-                    nameTil.setError("必須");
-                } else {
-                    nameTil.setErrorEnabled(false);
-                }
-            }
-        });
-
         final TextInputLayout descriptionTil = (TextInputLayout) view.findViewById(R.id.descriptionTextInputLayout);
         descriptionTil.setErrorEnabled(true);
         descriptionTil.setError("必須");
@@ -160,15 +132,10 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
 
                 if (type == Key.Type.EMPTY) {
                     //名前と説明を必須にしない
-                    nameTil.setErrorEnabled(false);
                     descriptionTil.setErrorEnabled(false);
                     //キーを追加できなくする
                     addKeyLayout.setVisibility(GONE);
                 } else {
-                    if (nameTil.getEditText().getText().length() == 0) {
-                        nameTil.setErrorEnabled(true);
-                        nameTil.setError("必須");
-                    }
                     if (descriptionTil.getEditText().getText().length() == 0) {
                         descriptionTil.setErrorEnabled(true);
                         descriptionTil.setError("必須");
@@ -225,7 +192,7 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                                 break;
                             //制御キー
                             case 2:
-                                adapter.addAll("BackSpace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp" + "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab");
+                                adapter.addAll("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "Page Up" , "Page Down", "End", "Home", "←", "↑", "→", "↓", "Print Screen", "Insert", "Delete", "Windows", "Num Lock", "Scroll Lock", "Esc", "Tab");
                                 break;
                             //ファンクションキー
                             case 3:
@@ -235,7 +202,7 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                                 break;
                             //記号
                             case 4:
-                                adapter.addAll(":*", ";+", ",<", "-=", ".>", "/?", "@`", "[{", "\\|", "]}", "^~", "\\_");
+                                adapter.addAll(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_");
                                 break;
                         }
                         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -263,9 +230,6 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view2) {
-                EditText editName = (EditText) view.findViewById(R.id.name);
-                String name = editName.getText().toString();
-
                 EditText editDescription = (EditText) view.findViewById(R.id.description);
                 String description = editDescription.getText().toString();
 
@@ -276,10 +240,10 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                 Key key = new EmptyKey();
                 switch (type) {
                     case RELEASED:
-                        key = new NormalKey(columnCount, rowCount, name, description, type);
+                        key = new NormalKey(columnCount, rowCount, description, type);
                         break;
                     case LONGPRESS:
-                        key = new LongPressKey(columnCount, rowCount, name, description, type);
+                        key = new LongPressKey(columnCount, rowCount, description, type);
                         break;
                     case PRESSING:
                         EditText editInterval = (EditText) view.findViewById(R.id.interval);
@@ -290,15 +254,15 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                             showErrorDialog("入力が不完全です");
                             return;
                         }
-                        key = new PressingKey(columnCount, rowCount, name, description, type, interval);
+                        key = new PressingKey(columnCount, rowCount, description, type, interval);
                         break;
                     case EMPTY:
-                        key = new EmptyKey(columnCount, rowCount, name, description, type);
+                        key = new EmptyKey(columnCount, rowCount, description, type);
                         break;
                 }
 
                 if (!(key instanceof EmptyKey)) {
-                    if (name.length() == 0 || description.length() == 0) {
+                    if (description.length() == 0) {
                         showErrorDialog("入力が不完全です");
                         return;
                     }

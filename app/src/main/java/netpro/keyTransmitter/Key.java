@@ -41,7 +41,6 @@ public abstract class Key implements Serializable {
 
     protected int columnSpan;
     protected int rowSpan;
-    protected String name;
     protected String description;
     protected Type type;
     protected List<String> keyCodeList;
@@ -49,13 +48,11 @@ public abstract class Key implements Serializable {
     /**
      * @param columnSpan
      * @param rowSpan
-     * @param name
      * @param description
      */
-    public Key(int columnSpan, int rowSpan, String name, String description, Type type) {
+    public Key(int columnSpan, int rowSpan, String description, Type type) {
         this.columnSpan = columnSpan;
         this.rowSpan = rowSpan;
-        this.name = name;
         this.description = description;
         this.type = type;
         keyCodeList = new ArrayList<>();
@@ -67,10 +64,6 @@ public abstract class Key implements Serializable {
 
     public int getRowSpan() {
         return rowSpan;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public String getDescription() {
@@ -103,5 +96,9 @@ public abstract class Key implements Serializable {
     }
 
     public void onCancel() {
+    }
+
+    protected void send() {
+        KeyTransmitter.INSTANCE.send(keyCodeList);
     }
 }

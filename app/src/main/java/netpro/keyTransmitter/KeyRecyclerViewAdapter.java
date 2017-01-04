@@ -46,13 +46,8 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         notifyItemRangeInserted(preSize, list.size() - 1);
     }
 
-
     public Key get(int index) {
         return datasource.get(index);
-    }
-
-    public List<Key> getDatasource() {
-        return datasource;
     }
 
     public void setDatasource(List<Key> datasource) {

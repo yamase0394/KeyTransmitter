@@ -15,11 +15,10 @@ public class EditMenuDialogFragment extends android.support.v4.app.DialogFragmen
 
     private OnListItemClickListener listener;
 
-    public static EditMenuDialogFragment newInstance(int position, String title, String message) {
+    public static EditMenuDialogFragment newInstance(int position, String message) {
         EditMenuDialogFragment fragment = new EditMenuDialogFragment();
         Bundle args = new Bundle();
         args.putInt("position", position);
-        args.putString("title", title);
         args.putString("message", message);
         fragment.setArguments(args);
         return fragment;
@@ -41,7 +40,7 @@ public class EditMenuDialogFragment extends android.support.v4.app.DialogFragmen
         });
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(getArguments().getString("title")).setMessage(getArguments().getString("message")).setView(view);
+        builder.setMessage(getArguments().getString("message")).setView(view);
         return builder.create();
     }
 

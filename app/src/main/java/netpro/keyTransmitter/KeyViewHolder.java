@@ -7,10 +7,12 @@ import android.view.View;
 import android.widget.TextView;
 
 public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
-    private TextView name;
     private TextView description;
+    private TextView type;
+    private TextView keyName;
     private View view;
     private Key key;
+    private View borderType;
 
     public KeyViewHolder(View itemView) {
         super(itemView);
@@ -18,22 +20,37 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
         cardView.setOnTouchListener(this);
         cardView.setOnLongClickListener(this);
         description = (TextView) itemView.findViewById(R.id.description);
-        name = (TextView) itemView.findViewById(R.id.name);
         view = itemView.findViewById(R.id.border);
+        view = itemView.findViewById(R.id.border);
+        borderType = itemView.findViewById(R.id.border_type);
+        keyName = (TextView) itemView.findViewById(R.id.key_name);
+        type = (TextView) itemView.findViewById(R.id.type);
     }
 
     public void setKey(Key key) {
         this.key = key;
 
         if (key instanceof EmptyKey) {
-            name.setVisibility(View.INVISIBLE);
             description.setVisibility(View.INVISIBLE);
             view.setVisibility(View.INVISIBLE);
+            borderType.setVisibility(View.INVISIBLE);
+            keyName.setVisibility(View.INVISIBLE);
+            type.setVisibility(View.INVISIBLE);
             return;
         }
 
         description.setText(key.getDescription());
-        name.setText(key.getName());
+        type.setText(key.getType().getDescription());
+        String keyNames = "";
+        for (String str : key.getKeyCodeList()) {
+            if (keyNames.length() == 0) {
+                keyNames += str;
+                continue;
+            }
+            keyNames += " + " + str;
+        }
+        keyName.setText(keyNames);
+
     }
 
     @Override
