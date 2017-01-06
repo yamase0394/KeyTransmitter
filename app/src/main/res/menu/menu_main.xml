@@ -3,4 +3,6 @@
 
     <item android:title="編集"
           android:id="@+id/editMode"/>
+    <item android:title="設定"
+          android:id="@+id/menu_item_config"/>
 </menu>

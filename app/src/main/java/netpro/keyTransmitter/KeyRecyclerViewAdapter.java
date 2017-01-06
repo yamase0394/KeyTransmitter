@@ -54,9 +54,4 @@ public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> 
         this.datasource = datasource;
         notifyDataSetChanged();
     }
-
-    public String getName() {
-        return "keyboard";
-    }
-
 }

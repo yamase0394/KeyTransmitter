@@ -1,5 +1,7 @@
 package netpro.keytransmitter;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
@@ -10,21 +12,23 @@ import java.util.List;
 public enum KeyTransmitter {
     INSTANCE;
 
+    private String ip;
+    private int port;
+
     public void send(List<String> keyStringList) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);
             oos.writeObject(keyStringList);
             oos.close();
-            byte[] sendByte = baos.toByteArray();
+            final byte[] sendByte = baos.toByteArray();
 
-            final DatagramPacket sendPacket;
-            sendPacket = new DatagramPacket(sendByte, sendByte.length, InetAddress.getByName("192.168.0.4"), 8088);
             final DatagramSocket sendSocket = new DatagramSocket();
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     try {
+                        DatagramPacket sendPacket = new DatagramPacket(sendByte, sendByte.length, InetAddress.getByName(ip), port);
                         sendSocket.send(sendPacket);
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -35,6 +39,15 @@ public enum KeyTransmitter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    public void setIp(String ip) {
+        this.ip = ip;
+        Log.d("ip", String.valueOf(ip));
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+        Log.d("port", String.valueOf(port));
     }
 }

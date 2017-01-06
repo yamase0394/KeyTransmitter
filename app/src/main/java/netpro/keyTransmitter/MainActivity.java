@@ -1,18 +1,21 @@
 package netpro.keytransmitter;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,25 +51,33 @@ public class MainActivity extends AppCompatActivity {
             try {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
                 datasource = (List<Key>) in.readObject();
-                Log.d("main", "deserialize");
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
         } else {
-            for (int i = 0; i < 14; i++) {
+            for (int i = 0; i < 20; i++) {
                 datasource.add(new EmptyKey());
             }
-            datasource.add(new NormalKey(2, 1,  "ああああああ", Key.Type.RELEASED));
-            datasource.add(new NormalKey(1, 3, "エンター", Key.Type.RELEASED));
-            datasource.add(new PressingKey(1, 1,"aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
+            try {
+                ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath));
+                out.writeObject(datasource);
+                out.flush();
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         adapter = new KeyRecyclerViewAdapter(getApplicationContext());
         adapter.addAllView(datasource);
         recyclerView.setAdapter(adapter);
 
-        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 15, 20, 0));
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        KeyTransmitter.INSTANCE.setIp(sp.getString("ip", null));
+        KeyTransmitter.INSTANCE.setPort(sp.getInt("port",8080));
     }
 
     @Override
@@ -81,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.editMode:
                 Intent intent = new Intent(getApplicationContext(), EditActivity.class);
                 startActivityForResult(intent, EDIT_REQUEST_CODE);
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+                break;
+            case R.id.menu_item_config:
+                intent = new Intent(getApplicationContext(), ConfigureActivity.class);
+                startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 break;
         }

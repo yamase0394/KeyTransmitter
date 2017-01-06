@@ -88,10 +88,6 @@ public class EditKeyRecyclerViewAdapter extends RecyclerView.Adapter<EditKeyView
         notifyDataSetChanged();
     }
 
-    public String getName() {
-        return "keyboard";
-    }
-
     public void setOnRecyclerClickListener(OnRecyclerClickListener listener) {
         this.listener = listener;
     }

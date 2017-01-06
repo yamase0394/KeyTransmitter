@@ -14,7 +14,6 @@ public abstract class Key implements Serializable {
         RELEASED("指を離したとき"),
         LONGPRESS("長押し"),
         PRESSING("押している間"),
-        SEEKBAR("バー"),
         EMPTY("何もしない");
 
         private String description;

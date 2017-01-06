@@ -65,19 +65,16 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
                 e.printStackTrace();
             }
         } else {
-            for (int i = 0; i < 14; i++) {
-                datasource.add(new EmptyKey());
-            }
-            datasource.add(new NormalKey(2, 1, "Ctrl+Shift", "ああああああ", Key.Type.RELEASED));
-            datasource.add(new NormalKey(1, 3, "Enter", "エンター", Key.Type.RELEASED));
-            datasource.add(new PressingKey(1, 1, "aaa", "aaaあうううううううううううううああ", Key.Type.PRESSING, 100));
+            finish();
+            overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            return;
         }
 
         adapter = new EditKeyRecyclerViewAdapter(getApplicationContext());
         adapter.setOnRecyclerClickListener(new OnRecyclerClickListener() {
             @Override
             public void onClickListener(final int position, Key key) {
-                android.support.v4.app.DialogFragment dialogFragment = EditMenuDialogFragment.newInstance(position, key.getName(), key.getDescription());
+                android.support.v4.app.DialogFragment dialogFragment = EditMenuDialogFragment.newInstance(position, key.getDescription());
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
             }
         });
@@ -85,7 +82,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
         recyclerView.setAdapter(adapter);
 
         //子View間の幅を設定する
-        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 20, 20, 0));
+        recyclerView.addItemDecoration(new SpaceItemDecoration(0, 15, 20, 0));
 
         //子Viewをドラッグで移動できるようにする
         ItemTouchHelper itemDecor = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP | ItemTouchHelper.DOWN | ItemTouchHelper.RIGHT | ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
@@ -140,7 +137,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             case R.id.save:
                 //datasourceをシリアライズ
                 File dir = getFilesDir();
-                String filePath = dir.getAbsolutePath() + File.separator + adapter.getName();
+                String filePath = dir.getAbsolutePath() + File.separator + "keyboard";
                 try {
                     ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath));
                     out.writeObject(adapter.getDatasource());
