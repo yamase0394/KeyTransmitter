@@ -1,7 +1,5 @@
 package netpro.keytransmitter;
 
-import android.util.Log;
-
 public class LongPressKey extends Key {
 
     private static final long serialVersionUID = -7412635502613056996L;
@@ -12,6 +10,6 @@ public class LongPressKey extends Key {
 
     @Override
     public void onLongClick() {
-        send();
+        send(keyCodeList);
     }
 }

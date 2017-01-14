@@ -1,7 +1,5 @@
 package netpro.keytransmitter;
 
-import android.util.Log;
-
 public class NormalKey extends Key {
 
     private static final long serialVersionUID = 8877586457351207301L;
@@ -12,6 +10,6 @@ public class NormalKey extends Key {
 
     @Override
     public void onActionUp() {
-        send();
+        send(keyCodeList);
     }
 }

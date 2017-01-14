@@ -1,5 +1,8 @@
 package netpro.keytransmitter;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 /**
  * 押している間キーコードを送信し続けるキーです
  */
@@ -17,7 +20,7 @@ public class PressingKey extends Key  {
     }
 
     @Override
-    public void onActionDown() {
+    public void onActionDown(View view, MotionEvent motionEvent) {
         running = false;
         running = true;
         new Thread(new Executer()).start();
@@ -41,7 +44,7 @@ public class PressingKey extends Key  {
         @Override
         public void run() {
             while (running) {
-                send();
+                send(keyCodeList);
                 try {
                     Thread.sleep(inputInterval);
                 } catch (InterruptedException e) {

@@ -1,5 +1,8 @@
 package netpro.keytransmitter;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +17,8 @@ public abstract class Key implements Serializable {
         RELEASED("指を離したとき"),
         LONGPRESS("長押し"),
         PRESSING("押している間"),
-        EMPTY("何もしない");
+        EMPTY("何もしない"),
+        KNOB("つまみ");
 
         private String description;
         private static Map<String, Type> toTypeMap = new HashMap<>();
@@ -85,7 +89,7 @@ public abstract class Key implements Serializable {
         keyCodeList.add(keyCode);
     }
 
-    public void onActionDown() {
+    public void onActionDown(View view, MotionEvent motionEvent) {
     }
 
     public void onActionUp() {
@@ -97,7 +101,10 @@ public abstract class Key implements Serializable {
     public void onCancel() {
     }
 
-    protected void send() {
+    public void onMove(View view, MotionEvent motionEvent) {
+    }
+
+    protected void send(List<String> keyCodeList) {
         KeyTransmitter.INSTANCE.send(keyCodeList);
     }
 }

@@ -29,6 +29,8 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
 
     private OnKeyUpdatedListener listener;
     private List<View> keyCodeViewList = new ArrayList<>();
+    private List<View> rightKeyCodeViewList = new ArrayList<>();
+    private List<View> leftKeyCodeViewList = new ArrayList<>();
 
     public static EditKeyDialogFragment newInstance(int position, int emptySpace, Key key) {
         EditKeyDialogFragment fragment = new EditKeyDialogFragment();
@@ -119,6 +121,11 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
         rowCountSpinner.setAdapter(adapter);
         rowCountSpinner.setSelection(key.getRowSpan() - 1);
 
+
+        final LinearLayout addKeyLayout = (LinearLayout) view.findViewById(R.id.addKeyLayout);
+        final LinearLayout addRightKeyLayout = (LinearLayout) view.findViewById(R.id.addRightKeyLayout);
+        final LinearLayout addLeftKeyLayout = (LinearLayout) view.findViewById(R.id.addLeftKeyLayout);
+
         final Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
         Key.Type[] keyTypes = Key.Type.values();
         String[] keyDescriptions = new String[keyTypes.length];
@@ -128,7 +135,6 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
         ArrayAdapter<String> keyAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, keyDescriptions);
         keyAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         keyTypeSpinner.setAdapter(keyAdapter);
-        final LinearLayout addKeyLayout = (LinearLayout) view.findViewById(R.id.addKeyLayout);
         keyTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -155,6 +161,16 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
                 } else {
                     intervalLayout.setVisibility(GONE);
                 }
+
+                if (type == Key.Type.KNOB) {
+                    addKeyLayout.setVisibility(GONE);
+                    addRightKeyLayout.setVisibility(View.VISIBLE);
+                    addLeftKeyLayout.setVisibility(View.VISIBLE);
+                } else {
+                    addKeyLayout.setVisibility(View.VISIBLE);
+                    addRightKeyLayout.setVisibility(View.GONE);
+                    addLeftKeyLayout.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -176,7 +192,7 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
             numberList.add(String.valueOf(i));
         }
 
-        final List<String> controlKeyList = Arrays.asList("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "Page Up" , "Page Down", "End", "Home", "←", "↑", "→", "↓", "Print Screen", "Insert", "Delete", "Windows", "Num Lock", "Scroll Lock", "Esc", "Tab");
+        final List<String> controlKeyList = Arrays.asList("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "Page Up", "Page Down", "End", "Home", "←", "↑", "→", "↓", "Print Screen", "Insert", "Delete", "Windows", "Num Lock", "Scroll Lock", "Esc", "Tab");
 
         final List<String> functionKeyList = new ArrayList<>();
         for (int i = 1; i <= 12; i++) {
@@ -220,6 +236,84 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
             });
             keyCodesLayout.addView(addKeyCodeView);
             keyCodeViewList.add(addKeyCodeView);
+        }
+
+        final LinearLayout rightKeyCodesLayout = (LinearLayout) view.findViewById(R.id.rotate_right_keyCodesLayout);
+        if (key.type == Key.Type.KNOB) {
+            for (String keyCode : ((ControlKnob) key).getRotateRightKeyCodeList()) {
+                List<String> spinnerContents = new ArrayList<>();
+                if (alphabetList.contains(keyCode)) {
+                    spinnerContents = alphabetList;
+                } else if (numberList.contains(keyCode)) {
+                    spinnerContents = numberList;
+                } else if (controlKeyList.contains(keyCode)) {
+                    spinnerContents = controlKeyList;
+                } else if (functionKeyList.contains(keyCode)) {
+                    spinnerContents = functionKeyList;
+                } else if (symbolList.contains(keyCode)) {
+                    spinnerContents = symbolList;
+                }
+
+                View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+                Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, spinnerContents);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(arrayAdapter);
+                spinner.setSelection(arrayAdapter.getPosition(keyCode));
+
+                Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+                removeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ViewGroup parent = (ViewGroup) view.getParent();
+                        rightKeyCodeViewList.remove(parent);
+                        parent.removeAllViews();
+                    }
+                });
+                rightKeyCodesLayout.addView(addKeyCodeView);
+                rightKeyCodeViewList.add(addKeyCodeView);
+            }
+        }
+
+        final LinearLayout leftKeyCodesLayout = (LinearLayout) view.findViewById(R.id.rotate_left_keyCodesLayout);
+        if (key.type == Key.Type.KNOB) {
+            for (String keyCode : ((ControlKnob) key).getRotateLeftKeyCodeList()) {
+                List<String> spinnerContents = new ArrayList<>();
+                if (alphabetList.contains(keyCode)) {
+                    spinnerContents = alphabetList;
+                } else if (numberList.contains(keyCode)) {
+                    spinnerContents = numberList;
+                } else if (controlKeyList.contains(keyCode)) {
+                    spinnerContents = controlKeyList;
+                } else if (functionKeyList.contains(keyCode)) {
+                    spinnerContents = functionKeyList;
+                } else if (symbolList.contains(keyCode)) {
+                    spinnerContents = symbolList;
+                }
+
+                View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+                Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, spinnerContents);
+
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner.setAdapter(arrayAdapter);
+                spinner.setSelection(arrayAdapter.getPosition(keyCode));
+
+                Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+                removeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        ViewGroup parent = (ViewGroup) view.getParent();
+                        leftKeyCodeViewList.remove(parent);
+                        parent.removeAllViews();
+                    }
+                });
+                leftKeyCodesLayout.addView(addKeyCodeView);
+                leftKeyCodeViewList.add(addKeyCodeView);
+            }
         }
 
         final Button addButton = (Button) view.findViewById(R.id.addButton);
@@ -280,6 +374,122 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
             }
         });
 
+        final Button addRightButton = (Button) view.findViewById(R.id.button_add_rotate_right_key);
+        addRightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                //Spinnerに入れるキーコードの種類を選択させるダイアログを生成
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                final String[] items = {"アルファベット", "数字", "制御キー", "ファンクションキー", "記号"};
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+                        Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+                        //選択結果に応じてSpinnerの選択肢を変える
+                        switch (which) {
+                            //アルファベット
+                            case 0:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, alphabetList);
+                                break;
+                            //数字
+                            case 1:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, numberList);
+                                break;
+                            //制御キー
+                            case 2:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, controlKeyList);
+                                break;
+                            //ファンクションキー
+                            case 3:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functionKeyList);
+                                break;
+                            //記号
+                            case 4:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, symbolList);
+                                break;
+                        }
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+                        spinner.setSelection(0);
+
+                        Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+                        removeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ViewGroup parent = (ViewGroup) view.getParent();
+                                rightKeyCodeViewList.remove(parent);
+                                parent.removeAllViews();
+                            }
+                        });
+                        rightKeyCodesLayout.addView(addKeyCodeView);
+                        rightKeyCodeViewList.add(addKeyCodeView);
+                    }
+                });
+                builder.show();
+            }
+        });
+
+        final Button addLeftButton = (Button) view.findViewById(R.id.button_add_rotate_left_key);
+        addLeftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                //Spinnerに入れるキーコードの種類を選択させるダイアログを生成
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                final String[] items = {"アルファベット", "数字", "制御キー", "ファンクションキー", "記号"};
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+                        Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+                        //選択結果に応じてSpinnerの選択肢を変える
+                        switch (which) {
+                            //アルファベット
+                            case 0:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, alphabetList);
+                                break;
+                            //数字
+                            case 1:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, numberList);
+                                break;
+                            //制御キー
+                            case 2:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, controlKeyList);
+                                break;
+                            //ファンクションキー
+                            case 3:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, functionKeyList);
+                                break;
+                            //記号
+                            case 4:
+                                adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, symbolList);
+                                break;
+                        }
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+                        spinner.setSelection(0);
+
+                        Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+                        removeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ViewGroup parent = (ViewGroup) view.getParent();
+                                leftKeyCodeViewList.remove(parent);
+                                parent.removeAllViews();
+                            }
+                        });
+                        leftKeyCodesLayout.addView(addKeyCodeView);
+                        leftKeyCodeViewList.add(addKeyCodeView);
+                    }
+                });
+                builder.show();
+            }
+        });
+
         Button createButton = (Button) view.findViewById(R.id.createButton);
         createButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,25 +520,47 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
                         }
                         key = new PressingKey(columnCount, rowCount, description, type, interval);
                         break;
+                    case KNOB:
+                        key = new ControlKnob(columnCount, rowCount, description, type);
+                        break;
                     case EMPTY:
                         key = new EmptyKey(columnCount, rowCount, description, type);
                         break;
                 }
 
                 if (!(key instanceof EmptyKey)) {
-                    if (description.length() == 0) {
-                        showErrorDialog("入力が不完全です");
-                        return;
-                    }
+                    if (key instanceof ControlKnob) {
+                        List<String> rightKeyStrList = new ArrayList<>();
+                        for (View v : rightKeyCodeViewList) {
+                            Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
+                            rightKeyStrList.add((String) spinner.getSelectedItem());
+                        }
+                        List<String> leftKeyStrList = new ArrayList<>();
+                        for (View v : leftKeyCodeViewList) {
+                            Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
+                            leftKeyStrList.add((String) spinner.getSelectedItem());
+                        }
+                        if (rightKeyStrList.isEmpty() || leftKeyStrList.isEmpty()) {
+                            showErrorDialog("少なくとも1つの入力キーが必要です");
+                            return;
+                        }
+                        ((ControlKnob) key).setRotateRightKeyCodeList(rightKeyStrList);
+                        ((ControlKnob) key).setRotateLeftKeyCodeList(leftKeyStrList);
+                    } else {
+                        if (description.length() == 0) {
+                            showErrorDialog("入力が不完全です");
+                            return;
+                        }
 
-                    if (keyCodeViewList.size() <= 0) {
-                        showErrorDialog("少なくとも1つの入力キーが必要です");
-                        return;
-                    }
+                        if (keyCodeViewList.size() <= 0) {
+                            showErrorDialog("少なくとも1つの入力キーが必要です");
+                            return;
+                        }
 
-                    for (View v : keyCodeViewList) {
-                        Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
-                        key.addKeyCode((String) spinner.getSelectedItem());
+                        for (View v : keyCodeViewList) {
+                            Spinner spinner = (Spinner) v.findViewById(R.id.keyCodeSpinner);
+                            key.addKeyCode((String) spinner.getSelectedItem());
+                        }
                     }
                 }
 

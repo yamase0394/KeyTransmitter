@@ -2,6 +2,7 @@ package netpro.keytransmitter;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -57,13 +58,19 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
     public boolean onTouch(View view, MotionEvent motionEvent) {
         switch (motionEvent.getAction()) {
             case MotionEvent.ACTION_DOWN:
-                key.onActionDown();
+                key.onActionDown(view, motionEvent);
                 break;
             case MotionEvent.ACTION_CANCEL:
+                Log.d("keyViewHolder", "cancel");
                 key.onCancel();
                 break;
             case MotionEvent.ACTION_UP:
+                Log.d("keyViewHolder", "up");
                 key.onActionUp();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                Log.d("keyViewHolder", "move");
+                key.onMove(view, motionEvent);
                 break;
         }
         return false;
