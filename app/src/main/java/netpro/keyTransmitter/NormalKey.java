@@ -1,5 +1,8 @@
 package netpro.keytransmitter;
 
+import android.view.MotionEvent;
+import android.view.View;
+
 public class NormalKey extends Key {
 
     private static final long serialVersionUID = 8877586457351207301L;
@@ -9,7 +12,7 @@ public class NormalKey extends Key {
     }
 
     @Override
-    public void onActionUp() {
+    public void onActionUp(View view, MotionEvent motionEvent) {
         send(keyCodeList);
     }
 }

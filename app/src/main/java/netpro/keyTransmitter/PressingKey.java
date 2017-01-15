@@ -27,7 +27,7 @@ public class PressingKey extends Key  {
     }
 
     @Override
-    public void onActionUp() {
+    public void onActionUp(View view, MotionEvent event) {
         running = false;
     }
 

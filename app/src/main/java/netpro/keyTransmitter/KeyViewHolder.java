@@ -66,7 +66,7 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
                 break;
             case MotionEvent.ACTION_UP:
                 Log.d("keyViewHolder", "up");
-                key.onActionUp();
+                key.onActionUp(view, motionEvent);
                 break;
             case MotionEvent.ACTION_MOVE:
                 Log.d("keyViewHolder", "move");

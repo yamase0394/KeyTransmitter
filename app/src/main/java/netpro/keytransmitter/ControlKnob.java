@@ -11,6 +11,7 @@ public class ControlKnob extends Key {
 
     private List<String> rotateLeftKeyCodeList;
     private List<String> rotateRightKeyCodeList;
+    //前のタッチ座標
     private float preX;
     private float preY;
     //MotionEventから得られるx,y座標が入れ替わることによりつまみが揺れることを抑える
@@ -32,6 +33,10 @@ public class ControlKnob extends Key {
     @Override
     public List<String> getKeyCodeList() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public void addKeyCode(String keyCode) {
     }
 
     @Override

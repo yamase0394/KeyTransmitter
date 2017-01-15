@@ -16,6 +16,10 @@ public enum KeyTransmitter {
     private int port;
 
     public void send(List<String> keyStringList) {
+        if (keyStringList.isEmpty()) {
+            return;
+        }
+
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ObjectOutputStream oos = new ObjectOutputStream(baos);

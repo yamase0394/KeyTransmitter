@@ -18,7 +18,8 @@ public abstract class Key implements Serializable {
         LONGPRESS("長押し"),
         PRESSING("押している間"),
         EMPTY("何もしない"),
-        KNOB("つまみ");
+        KNOB("つまみ"),
+        FLICK("フリック");
 
         private String description;
         private static Map<String, Type> toTypeMap = new HashMap<>();
@@ -92,7 +93,7 @@ public abstract class Key implements Serializable {
     public void onActionDown(View view, MotionEvent motionEvent) {
     }
 
-    public void onActionUp() {
+    public void onActionUp(View view, MotionEvent motionEvent) {
     }
 
     public void onLongClick() {
