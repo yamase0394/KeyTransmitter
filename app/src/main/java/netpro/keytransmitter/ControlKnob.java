@@ -112,7 +112,7 @@ public class ControlKnob extends Key {
             }
             send(rotateLeftKeyCodeList);
         }
-        view.setRotation(view.getRotation() + (float) (gap));
+        view.findViewById(R.id.image_view_knob).setRotation(view.getRotation() + (float) (gap));
     }
 
 }

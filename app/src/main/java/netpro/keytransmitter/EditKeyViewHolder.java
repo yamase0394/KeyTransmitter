@@ -3,6 +3,7 @@ package netpro.keytransmitter;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class EditKeyViewHolder extends RecyclerView.ViewHolder {
@@ -12,6 +13,7 @@ public class EditKeyViewHolder extends RecyclerView.ViewHolder {
     private View view;
     private Key key;
     private View borderType;
+    private ImageView knobImageView;
     private OnRecyclerClickListener listener;
 
     public EditKeyViewHolder(View itemView) {
@@ -30,10 +32,17 @@ public class EditKeyViewHolder extends RecyclerView.ViewHolder {
         borderType = itemView.findViewById(R.id.border_type);
         keyName = (TextView) itemView.findViewById(R.id.key_name);
         type = (TextView) itemView.findViewById(R.id.type);
+        knobImageView = (ImageView) itemView.findViewById(R.id.image_view_knob);
     }
 
     public void setKey(Key key) {
         this.key = key;
+
+        if (key instanceof ControlKnob) {
+            knobImageView.setVisibility(View.VISIBLE);
+        } else {
+            knobImageView.setVisibility(View.GONE);
+        }
 
         if (key instanceof EmptyKey) {
             description.setVisibility(View.INVISIBLE);

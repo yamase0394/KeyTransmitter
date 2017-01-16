@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
@@ -14,6 +15,8 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
     private View view;
     private Key key;
     private View borderType;
+    private ImageView knobImageView;
+
 
     public KeyViewHolder(View itemView) {
         super(itemView);
@@ -26,10 +29,17 @@ public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTou
         borderType = itemView.findViewById(R.id.border_type);
         keyName = (TextView) itemView.findViewById(R.id.key_name);
         type = (TextView) itemView.findViewById(R.id.type);
+        knobImageView = (ImageView) itemView.findViewById(R.id.image_view_knob);
     }
 
     public void setKey(Key key) {
         this.key = key;
+
+        if (key instanceof ControlKnob) {
+            knobImageView.setVisibility(View.VISIBLE);
+        } else {
+            knobImageView.setVisibility(View.GONE);
+        }
 
         if (key instanceof EmptyKey) {
             description.setVisibility(View.INVISIBLE);

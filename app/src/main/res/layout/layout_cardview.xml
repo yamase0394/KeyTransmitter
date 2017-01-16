@@ -5,66 +5,79 @@
               android:id="@+id/layout"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:clickable="false">
+              android:clickable="false"
+              android:orientation="vertical">
 
     <android.support.v7.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardUseCompatPadding="true"
-        android:foreground="?android:attr/selectableItemBackground"
         android:clickable="true"
-        app:cardCornerRadius="10dp">
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardCornerRadius="10dp"
+        app:cardUseCompatPadding="true">
 
-        <LinearLayout
-            android:id="@+id/cardLayout"
+        <android.support.percent.PercentRelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
-            android:clickable="false">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:text="TextView"
+            <ImageView
+                app2:layout_widthPercent="100%"
+                app2:layout_heightPercent="100%"
+                app2:srcCompat="@drawable/knob"
+                android:id="@+id/image_view_knob"
+                android:layout_margin="5dp"/>
+
+            <LinearLayout
+                android:id="@+id/cardLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/description"
-                android:gravity="center|clip_vertical"
-                android:layout_weight="1"/>
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:clickable="false"
+                android:orientation="vertical">
 
-            <View
-                android:id="@+id/border"
-                android:layout_width="match_parent"
-                android:background="@color/colorGray"
-                android:layout_height="1dp"/>
+                <TextView
+                    android:id="@+id/description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center|clip_vertical"
+                    android:text="TextView"/>
 
-            <TextView
-                android:text="TextViewaaaaaaaaaaaaaaaaa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/key_name"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"/>
+                <View
+                    android:id="@+id/border"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorGray"/>
 
-            <View
-                android:id="@+id/border_type"
-                android:layout_width="match_parent"
-                android:background="@color/colorGray"
-                android:layout_height="1dp"/>
+                <TextView
+                    android:id="@+id/key_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:text="TextViewaaaaaaaaaaaaaaaaa"/>
 
-            <TextView
-                android:text="TextViewaaaaaaaaaaaaaaaaa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/type"
-                android:maxLines="1"
-                android:ellipsize="end"
-                android:gravity="center_horizontal"/>
+                <View
+                    android:id="@+id/border_type"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/colorGray"/>
+
+                <TextView
+                    android:id="@+id/type"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:gravity="center_horizontal"
+                    android:maxLines="1"
+                    android:text="TextViewaaaaaaaaaaaaaaaaa"/>
 
 
-        </LinearLayout>
+            </LinearLayout>
+
+        </android.support.percent.PercentRelativeLayout>
 
     </android.support.v7.widget.CardView>
 </LinearLayout>
