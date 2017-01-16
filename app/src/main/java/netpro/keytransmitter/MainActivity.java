@@ -19,6 +19,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int EDIT_REQUEST_CODE = 1;

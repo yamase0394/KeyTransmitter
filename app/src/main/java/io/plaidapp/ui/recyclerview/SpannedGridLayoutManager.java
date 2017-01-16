@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package netpro.keytransmitter;
+package io.plaidapp.ui.recyclerview;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -31,6 +31,8 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import netpro.keytransmitter.R;
 
 
 /**

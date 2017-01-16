@@ -22,6 +22,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager;
+
 public class EditActivity extends AppCompatActivity implements EditMenuDialogFragment.OnListItemClickListener, AddKeyDialogFragment.OnKeyGeneratedListener, EditKeyDialogFragment.OnKeyUpdatedListener {
 
     private EditKeyRecyclerViewAdapter adapter;
