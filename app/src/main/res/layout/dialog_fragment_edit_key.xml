@@ -36,7 +36,8 @@
                     android:id="@+id/description"
                     android:layout_weight="1"
                     android:hint="説明"
-                    android:textSize="16sp"/>
+                    android:textSize="16sp"
+                    android:imeOptions="actionDone"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -478,7 +479,8 @@
                     android:layout_weight="1"
                     android:hint="入力間隔(ミリ秒)"
                     android:textSize="16sp"
-                    android:inputType="number"/>
+                    android:inputType="number"
+                    android:imeOptions="actionDone"/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -497,7 +499,8 @@
                     android:layout_weight="1"
                     android:hint="フリック距離"
                     android:textSize="16sp"
-                    android:inputType="number"/>
+                    android:inputType="number"
+                    android:imeOptions="actionDone"/>
 
             </android.support.design.widget.TextInputLayout>
 
