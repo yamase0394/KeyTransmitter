@@ -208,11 +208,10 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
                 }
 
                 if (type == Key.Type.KNOB) {
-                    addKeyLayout.setVisibility(GONE);
                     addRightKeyLayout.setVisibility(View.VISIBLE);
                     addLeftKeyLayout.setVisibility(View.VISIBLE);
+                    addKeyLayout.setVisibility(GONE);
                 } else {
-                    addKeyLayout.setVisibility(View.VISIBLE);
                     addRightKeyLayout.setVisibility(View.GONE);
                     addLeftKeyLayout.setVisibility(View.GONE);
                 }
@@ -223,10 +222,7 @@ public class EditKeyDialogFragment extends android.support.v4.app.DialogFragment
                     addFlickRightKeyLayout.setVisibility(View.VISIBLE);
                     addFlickLeftKeyLayout.setVisibility(View.VISIBLE);
                     adjustTextInputLayout.setVisibility(View.VISIBLE);
-
                     addKeyLayout.setVisibility(GONE);
-                    addRightKeyLayout.setVisibility(View.GONE);
-                    addLeftKeyLayout.setVisibility(View.GONE);
                 } else {
                     addFlickUpKeyLayout.setVisibility(View.GONE);
                     addFlickDownKeyLayout.setVisibility(View.GONE);

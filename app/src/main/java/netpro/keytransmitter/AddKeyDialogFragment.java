@@ -199,21 +199,17 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                     addRightKeyLayout.setVisibility(View.VISIBLE);
                     addLeftKeyLayout.setVisibility(View.VISIBLE);
                 } else {
-                    addKeyLayout.setVisibility(View.VISIBLE);
                     addRightKeyLayout.setVisibility(View.GONE);
                     addLeftKeyLayout.setVisibility(View.GONE);
                 }
 
                 if (type == Key.Type.FLICK) {
+                    addKeyLayout.setVisibility(GONE);
                     addFlickUpKeyLayout.setVisibility(View.VISIBLE);
                     addFlickDownKeyLayout.setVisibility(View.VISIBLE);
                     addFlickRightKeyLayout.setVisibility(View.VISIBLE);
                     addFlickLeftKeyLayout.setVisibility(View.VISIBLE);
                     adjustTextInputLayout.setVisibility(View.VISIBLE);
-
-                    addKeyLayout.setVisibility(GONE);
-                    addRightKeyLayout.setVisibility(View.GONE);
-                    addLeftKeyLayout.setVisibility(View.GONE);
                 } else {
                     addFlickUpKeyLayout.setVisibility(View.GONE);
                     addFlickDownKeyLayout.setVisibility(View.GONE);
