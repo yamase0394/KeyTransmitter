@@ -228,6 +228,8 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
 
         final LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.keyCodesLayout);
         final Button addButton = (Button) view.findViewById(R.id.addButton);
+        initKeyCodesLayout(linearLayout, addButton, keyCodeViewList);
+        /*
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -292,6 +294,7 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
                 builder.show();
             }
         });
+        */
 
         final LinearLayout rightKeyCodesLayout = (LinearLayout) view.findViewById(R.id.rotate_right_keyCodesLayout);
         final Button addRightButton = (Button) view.findViewById(R.id.button_add_rotate_right_key);
@@ -887,4 +890,70 @@ public class AddKeyDialogFragment extends android.support.v4.app.DialogFragment 
         void onKeyGenerated(Key key);
     }
 
+    private void initKeyCodesLayout(final LinearLayout keyCodesLayout, Button addKeyCodeButton, final List<View> keyCodeViewList) {
+        addKeyCodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                //Spinnerに入れるキーコードの種類を選択させるダイアログを生成
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                final String[] items = {"アルファベット", "数字", "制御キー", "ファンクションキー", "記号"};
+                builder.setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        View addKeyCodeView = View.inflate(getActivity(), R.layout.layout_add_key_code, null);
+
+                        Spinner spinner = (Spinner) addKeyCodeView.findViewById(R.id.keyCodeSpinner);
+                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item);
+                        //選択結果に応じてSpinnerの選択肢を変える
+                        switch (which) {
+                            //アルファベット
+                            case 0:
+                                final int ALPHABET_SIZE = 'Z' - 'A';
+                                char alphabet = 'A';
+                                for (int i = 0; i <= ALPHABET_SIZE; i++) {
+                                    adapter.add(String.valueOf(alphabet++));
+                                }
+                                break;
+                            //数字
+                            case 1:
+                                for (int i = 0; i < 10; i++) {
+                                    adapter.add(String.valueOf(i));
+                                }
+                                break;
+                            //制御キー
+                            case 2:
+                                adapter.addAll("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "Page Up", "Page Down", "End", "Home", "←", "↑", "→", "↓", "Print Screen", "Insert", "Delete", "Windows", "Num Lock", "Scroll Lock", "Esc", "Tab");
+                                break;
+                            //ファンクションキー
+                            case 3:
+                                for (int i = 1; i <= 12; i++) {
+                                    adapter.add("F" + String.valueOf(i));
+                                }
+                                break;
+                            //記号
+                            case 4:
+                                adapter.addAll(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_");
+                                break;
+                        }
+                        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                        spinner.setAdapter(adapter);
+                        spinner.setSelection(0);
+
+                        Button removeButton = (Button) addKeyCodeView.findViewById(R.id.removeButton);
+                        removeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                ViewGroup parent = (ViewGroup) view.getParent();
+                                keyCodeViewList.remove(parent);
+                                parent.removeAllViews();
+                            }
+                        });
+                        keyCodesLayout.addView(addKeyCodeView);
+                        keyCodeViewList.add(addKeyCodeView);
+                    }
+                });
+                builder.show();
+            }
+        });
+    }
 }

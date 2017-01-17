@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * KeyRecyclerViewAdapterのViewHolder
+ */
 public class KeyViewHolder extends RecyclerView.ViewHolder implements View.OnTouchListener, View.OnLongClickListener {
     private TextView description;
     private TextView type;

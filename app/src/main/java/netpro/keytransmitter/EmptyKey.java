@@ -1,5 +1,8 @@
 package netpro.keytransmitter;
 
+/**
+ * 空を表すボタンです
+ */
 public class EmptyKey extends Key {
 
     private static final long serialVersionUID = -1696906106555982373L;

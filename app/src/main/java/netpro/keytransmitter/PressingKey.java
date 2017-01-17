@@ -4,7 +4,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * 押している間キーコードを送信し続けるキーです
+ * 押している間、設定した間隔でキーコードを送信し続けるボタンです
  */
 public class PressingKey extends Key  {
 

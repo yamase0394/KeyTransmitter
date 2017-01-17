@@ -6,6 +6,9 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 上下左右にフリックしたときにキー情報を送信するキーです
+ */
 public class FlickKey extends Key {
 
     private static final long serialVersionUID = -5499597086336673528L;
@@ -18,13 +21,13 @@ public class FlickKey extends Key {
     private float nowTouchedX;
     private float nowTouchedY;
 
+    //それぞれの方向へフリックしたときに送信するキー情報
     private List<String> flickUpKeyStrList;
     private List<String> flickDownKeyStrList;
     private List<String> flickRightKeyStrList;
     private List<String> flickLeftKeyStrList;
 
-
-    // フリックの遊び部分（最低限移動しないといけない距離）
+    //フリック距離
     private int adjust = 120;
 
     /**
@@ -32,6 +35,7 @@ public class FlickKey extends Key {
      * @param rowSpan
      * @param description
      * @param type
+     * @param adjust フリック距離
      */
     public FlickKey(int columnSpan, int rowSpan, String description, Type type, int adjust) {
         super(columnSpan, rowSpan, description, type);

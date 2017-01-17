@@ -22,6 +22,7 @@ public class MyRecyclerView extends RecyclerView{
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
+        //タッチイベントを消費しないようにする
         return false;
     }
 }

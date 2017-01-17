@@ -1,5 +1,8 @@
 package netpro.keytransmitter;
 
+/**
+ * 長押ししたときにキーを送信するボタンです
+ */
 public class LongPressKey extends Key {
 
     private static final long serialVersionUID = -7412635502613056996L;

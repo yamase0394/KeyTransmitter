@@ -3,6 +3,9 @@ package netpro.keytransmitter;
 import android.view.MotionEvent;
 import android.view.View;
 
+/**
+ * 指を離したときにキーを送信するボタンです
+ */
 public class NormalKey extends Key {
 
     private static final long serialVersionUID = 8877586457351207301L;

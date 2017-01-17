@@ -1,6 +1,5 @@
 package netpro.keytransmitter;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,13 +8,13 @@ import android.view.ViewGroup;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * MainActivityのRecyclerViewの
+ */
 public class KeyRecyclerViewAdapter extends RecyclerView.Adapter<KeyViewHolder> {
     private List<Key> datasource = new LinkedList<>();
-    private Context context;
 
-
-    public KeyRecyclerViewAdapter(Context context) {
-        this.context = context;
+    public KeyRecyclerViewAdapter() {
     }
 
     @Override

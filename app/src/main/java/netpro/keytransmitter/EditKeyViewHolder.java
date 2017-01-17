@@ -6,6 +6,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+/**
+ * EditRecyclerViewAdapterのViewHolder
+ */
 public class EditKeyViewHolder extends RecyclerView.ViewHolder {
     private TextView description;
     private TextView type;

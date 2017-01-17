@@ -9,6 +9,9 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.List;
 
+/**
+ * キーの名前をレシーバーに送信するためのクラス
+ */
 public enum KeyTransmitter {
     INSTANCE;
 

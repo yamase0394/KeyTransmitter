@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        adapter = new KeyRecyclerViewAdapter(getApplicationContext());
+        adapter = new KeyRecyclerViewAdapter();
         adapter.addAllView(datasource);
         recyclerView.setAdapter(adapter);
 
@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     ObjectInputStream in = new ObjectInputStream(new FileInputStream(file));
                     List<Key> datasource = (List<Key>) in.readObject();
-                    adapter = new KeyRecyclerViewAdapter(getApplicationContext());
+                    adapter = new KeyRecyclerViewAdapter();
                     adapter.setDatasource(datasource);
                     recyclerView.swapAdapter(adapter, false);
                 } catch (IOException e) {

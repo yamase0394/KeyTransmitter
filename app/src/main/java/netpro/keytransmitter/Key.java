@@ -53,6 +53,7 @@ public abstract class Key implements Serializable {
      * @param columnSpan
      * @param rowSpan
      * @param description
+     * @param type
      */
     public Key(int columnSpan, int rowSpan, String description, Type type) {
         this.columnSpan = columnSpan;

@@ -72,7 +72,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             return;
         }
 
-        adapter = new EditKeyRecyclerViewAdapter(getApplicationContext());
+        adapter = new EditKeyRecyclerViewAdapter();
         adapter.setOnRecyclerClickListener(new OnRecyclerClickListener() {
             @Override
             public void onClickListener(final int position, Key key) {

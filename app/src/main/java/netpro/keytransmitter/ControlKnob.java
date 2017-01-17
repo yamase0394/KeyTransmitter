@@ -2,10 +2,14 @@ package netpro.keytransmitter;
 
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 左右それぞれの方向への回転時にキーを送信するつまみです
+ */
 public class ControlKnob extends Key {
     private static final long serialVersionUID = -3872636246983991948L;
 
@@ -112,7 +116,8 @@ public class ControlKnob extends Key {
             }
             send(rotateLeftKeyCodeList);
         }
-        view.findViewById(R.id.image_view_knob).setRotation(view.getRotation() + (float) (gap));
+        ImageView knobImageView = (ImageView) view.findViewById(R.id.image_view_knob);
+        knobImageView.setRotation(knobImageView.getRotation() + (float) (gap));
     }
 
 }
