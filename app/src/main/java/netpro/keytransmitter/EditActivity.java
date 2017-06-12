@@ -118,7 +118,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
             @Override
             public void onClick(View view) {
                 Log.d("edit", "add");
-                android.support.v4.app.DialogFragment dialogFragment = AddKeyDialogFragment.newInstance(adapter.getEmptySpace());
+                android.support.v4.app.DialogFragment dialogFragment = AddKeyDialogFragment.Companion.newInstance(adapter.getEmptySpace());
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
             }
         });
