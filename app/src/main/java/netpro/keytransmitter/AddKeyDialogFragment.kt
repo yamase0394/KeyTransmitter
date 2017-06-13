@@ -407,7 +407,7 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
         addKeyCodeButton.setOnClickListener {
             //Spinnerに入れるキーコードの種類を選択させるダイアログを生成
             val builder = AlertDialog.Builder(context)
-            val items = arrayOf("アルファベット", "数字", "制御キー", "ファンクションキー", "記号")
+            val items = arrayOf("アルファベット", "数字", "制御キー", "ファンクションキー")
             builder.setItems(items) { _, which ->
                 val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
 
@@ -434,7 +434,7 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
                         adapter.add("F" + i.toString())
                     }
                 //記号
-                    4 -> adapter.addAll(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
+                    //4 -> adapter.addAll(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
                 }
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
