@@ -171,7 +171,7 @@ public class EditActivity extends AppCompatActivity implements EditMenuDialogFra
     public void onListItemClicked(int position, String selectedStr) {
         switch (selectedStr) {
             case "編集":
-                android.support.v4.app.DialogFragment dialogFragment = EditKeyDialogFragment.newInstance(position, adapter.getEmptySpace(), adapter.get(position));
+                android.support.v4.app.DialogFragment dialogFragment = EditKeyDialogFragment.Companion.newInstance(position, adapter.getEmptySpace(), adapter.get(position));
                 dialogFragment.show(getSupportFragmentManager(), "fragment_dialog");
                 break;
             case "削除":
