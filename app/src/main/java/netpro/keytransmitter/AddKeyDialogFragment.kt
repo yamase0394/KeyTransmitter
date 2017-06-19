@@ -83,7 +83,7 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val descriptionTil = view.findViewById(R.id.descriptionTextInputLayout) as TextInputLayout
         descriptionTil.isErrorEnabled = true
         descriptionTil.error = "必須"
-        descriptionTil.editText!!.addTextChangedListener(object:TextWatcher {
+        descriptionTil.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
@@ -147,8 +147,8 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     //キーを追加できなくする
                     addKeyLayout.visibility = GONE
                 } else {
-                    if (descriptionTil.editText!!.text.length == 0) {
-                        descriptionTil.isErrorEnabled = true;
+                    if (descriptionTil.editText!!.text.isEmpty()) {
+                        descriptionTil.isErrorEnabled = true
                         descriptionTil.error = "必須";
                     }
 
@@ -228,12 +228,31 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
             val columnCount = columnCountSpinner.selectedItem as Int
             val rowCount = rowCountSpinner.selectedItem as Int
+            if (columnCount * rowCount > arguments.getInt("emptySpace")) {
+                val shortage = columnCount * rowCount - arguments.getInt("emptySpace")
+                showErrorDialog("スペースが " + shortage + "足りません")
+                return@OnClickListener
+            }
 
             val type = Key.Type.toType(keyTypeSpinner.selectedItem as String)
             var key: Key = EmptyKey()
             when (type) {
-                Key.Type.RELEASED -> key = NormalKey(columnCount, rowCount, description, type)
-                Key.Type.LONGPRESS -> key = LongPressKey(columnCount, rowCount, description, type)
+                Key.Type.RELEASED -> {
+                    key = NormalKey(columnCount, rowCount, description, type)
+
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
+                    }
+                }
+                Key.Type.LONGPRESS -> {
+                    key = LongPressKey(columnCount, rowCount, description, type)
+
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
+                    }
+                }
                 Key.Type.PRESSING -> {
                     val editInterval = view.findViewById(R.id.interval) as EditText
                     val interval: Int
@@ -245,30 +264,15 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     }
 
                     key = PressingKey(columnCount, rowCount, description, type, interval.toLong())
-                }
-                Key.Type.KNOB -> key = ControlKnob(columnCount, rowCount, description, type)
-                Key.Type.FLICK -> {
-                    val adjustEditText = view.findViewById(R.id.edit_text_adjust) as EditText
-                    val adjust: Int
-                    try {
-                        adjust = Integer.parseInt(adjustEditText.text.toString())
-                    } catch (e: NumberFormatException) {
-                        showErrorDialog("フリック距離を入力してください")
-                        return@OnClickListener
+
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
                     }
-
-                    key = FlickKey(columnCount, rowCount, description, type, adjust)
                 }
-                Key.Type.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
-            }
+                Key.Type.KNOB -> {
+                    key = ControlKnob(columnCount, rowCount, description, type)
 
-            if (key !is EmptyKey) {
-                if (description.length == 0) {
-                    showErrorDialog("入力が不完全です");
-                    return@OnClickListener
-                }
-
-                if (key is ControlKnob) {
                     val rightKeyStrList = ArrayList<String>()
                     for (v in rightKeyCodeViewList) {
                         val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
@@ -287,7 +291,19 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
                         */
                     key.rotateRightKeyCodeList = rightKeyStrList
                     key.rotateRightKeyCodeList = leftKeyStrList
-                } else if (key is FlickKey) {
+                }
+                Key.Type.FLICK -> {
+                    val adjustEditText = view.findViewById(R.id.edit_text_adjust) as EditText
+                    val adjust: Int
+                    try {
+                        adjust = Integer.parseInt(adjustEditText.text.toString())
+                    } catch (e: NumberFormatException) {
+                        showErrorDialog("フリック距離を入力してください")
+                        return@OnClickListener
+                    }
+
+                    key = FlickKey(columnCount, rowCount, description, type, adjust)
+
                     val flickUpKeyStrList = ArrayList<String>()
                     for (v in flickUpKeyCodeViewList) {
                         val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
@@ -318,25 +334,12 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     key.flickDownKeyStrList = flickDownKeyStrList
                     key.flickRightKeyStrList = flickRightKeyStrList
                     key.flickLeftKeyStrList = flickLeftKeyStrList
-                } else {
-
-                    /*
-                        if (keyCodeViewList.size() <= 0) {
-                            showErrorDialog("少なくとも1つの入力キーが必要です");
-                            return;
-                        }
-                        */
-
-                    for (v in keyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        key.addKeyCode(spinner.selectedItem as String)
-                    }
                 }
+                Key.Type.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
             }
 
-            if (columnCount * rowCount > arguments.getInt("emptySpace")) {
-                val shortage = columnCount * rowCount - arguments.getInt("emptySpace")
-                showErrorDialog("スペースが " + shortage + "足りません")
+            if (key !is EmptyKey && description.isNullOrEmpty()) {
+                showErrorDialog("入力が不完全です");
                 return@OnClickListener
             }
 
