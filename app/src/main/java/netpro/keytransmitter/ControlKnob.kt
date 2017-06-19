@@ -2,7 +2,6 @@ package netpro.keytransmitter
 
 import android.view.MotionEvent
 import android.view.View
-import android.widget.ImageView
 import java.util.*
 
 /**
@@ -88,8 +87,6 @@ class ControlKnob
             }
             send(rotateLeftKeyCodeList)
         }
-        val knobImageView = view.findViewById(R.id.image_view_knob) as ImageView
-        knobImageView.rotation = knobImageView.rotation + gap.toFloat()
     }
 
     companion object {

@@ -10,7 +10,6 @@ class LongPressKey(columnSpan: Int, rowSpan: Int, description: String, type: Key
     }
 
     companion object {
-
         private val serialVersionUID = -7412635502613056996L
     }
 }

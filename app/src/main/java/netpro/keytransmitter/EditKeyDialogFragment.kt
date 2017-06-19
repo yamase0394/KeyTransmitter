@@ -93,32 +93,25 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
         val descriptionTil = view.findViewById(R.id.descriptionTextInputLayout) as TextInputLayout
         descriptionTil.editText!!.setText(key.description)
-        /*
-        descriptionTil.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+        descriptionTil.editText!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
             }
 
-            @Override
-            public void afterTextChanged(Editable editable) {
-                Spinner keyTypeSpinner = (Spinner) view.findViewById(R.id.keyTypeSpinner);
-                String str = (String) keyTypeSpinner.getSelectedItem();
-                Key.Type type = Key.Type.toType(str);
-                if (type != Key.Type.EMPTY && editable.length() == 0) {
-                    descriptionTil.setErrorEnabled(true);
-                    descriptionTil.setError("必須");
+            override fun afterTextChanged(editable: Editable) {
+                val keyTypeSpinner = view.findViewById(R.id.keyTypeSpinner) as Spinner
+                val str = keyTypeSpinner.selectedItem as String
+                val type = Key.Type.toType(str)
+                if (type != Key.Type.EMPTY && editable.length == 0) {
+                    descriptionTil.isErrorEnabled = true
+                    descriptionTil.error = "必須"
                 } else {
-                    descriptionTil.setErrorEnabled(false);
+                    descriptionTil.isErrorEnabled = false
                 }
             }
-        });
-        */
+        })
 
         val columnCountSpinner = view.findViewById(R.id.columnCountSpinner) as Spinner
         val columnCounts = arrayOf(1, 2, 3, 4, 5)
@@ -160,16 +153,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
                 if (type == Key.Type.EMPTY) {
                     //名前と説明を必須にしない
-                    //descriptionTil.setErrorEnabled(false);
+                    descriptionTil.setErrorEnabled(false);
                     //キーを追加できなくする
                     addKeyLayout.visibility = GONE
                 } else {
-                    /*
-                    if (descriptionTil.getEditText().getText().length() == 0) {
-                        descriptionTil.setErrorEnabled(true);
-                        descriptionTil.setError("必須");
+                    if (descriptionTil.editText!!.text.length == 0) {
+                        descriptionTil.isErrorEnabled = true
+                        descriptionTil.error = "必須"
                     }
-                    */
                     addKeyLayout.visibility = View.VISIBLE
                 }
 
@@ -240,7 +231,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                 controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
                 functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
                 specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
+            //symbolList.contains(keyCode) -> spinnerContents = symbolList
             }
 
             val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
@@ -522,6 +513,11 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             }
 
             if (key !is EmptyKey) {
+                if (description.length == 0) {
+                    showErrorDialog("入力が不完全です");
+                    return@OnClickListener
+                }
+
                 if (key is ControlKnob) {
                     val rightKeyStrList = ArrayList<String>()
                     for (v in rightKeyCodeViewList) {
@@ -573,11 +569,8 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     key.flickRightKeyStrList = flickRightKeyStrList
                     key.flickLeftKeyStrList = flickLeftKeyStrList
                 } else {
+
                     /*
-                        if (description.length() == 0) {
-                            showErrorDialog("入力が不完全です");
-                            return;
-                        }
 
                         if (keyCodeViewList.size() <= 0) {
                             showErrorDialog("少なくとも1つの入力キーが必要です");
