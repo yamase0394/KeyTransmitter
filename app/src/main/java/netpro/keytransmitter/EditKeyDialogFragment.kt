@@ -92,7 +92,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         })
 
         val descriptionTil = view.findViewById(R.id.descriptionTextInputLayout) as TextInputLayout
-        descriptionTil.editText!!.setText(key.getDescription())
+        descriptionTil.editText!!.setText(key.description)
         /*
         descriptionTil.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
@@ -125,14 +125,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, columnCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         columnCountSpinner.adapter = adapter
-        columnCountSpinner.setSelection(key.getColumnSpan() - 1)
+        columnCountSpinner.setSelection(key.columnSpan - 1)
 
         val rowCountSpinner = view.findViewById(R.id.rowCountSpinner) as Spinner
         val rowCounts = arrayOf(1, 2, 3, 4)
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, rowCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         rowCountSpinner.adapter = adapter
-        rowCountSpinner.setSelection(key.getRowSpan() - 1)
+        rowCountSpinner.setSelection(key.rowSpan - 1)
 
 
         val addKeyLayout = view.findViewById(R.id.addKeyLayout) as LinearLayout
@@ -209,7 +209,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
             }
         }
-        keyTypeSpinner.setSelection(key.getType().ordinal)
+        keyTypeSpinner.setSelection(key.type.ordinal)
 
         val alphabetList = ArrayList<String>()
         val ALPHABET_SIZE = 'Z' - 'A'
@@ -232,7 +232,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val specialList = Arrays.asList("VolUp", "VolDown", "VolMute")
 
         val keyCodesLayout = view.findViewById(R.id.keyCodesLayout) as LinearLayout
-        for (keyCode in key.getKeyCodeList()) {
+        for (keyCode in key.keyCodeList) {
             var spinnerContents: List<String> = ArrayList()
             when {
                 alphabetList.contains(keyCode) -> spinnerContents = alphabetList
@@ -710,7 +710,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             val fragment = EditKeyDialogFragment()
             val args = Bundle()
             args.putInt("position", position)
-            args.putInt("emptySpace", emptySpace + key.getColumnSpan() * key.getRowSpan())
+            args.putInt("emptySpace", emptySpace + key.columnSpan * key.rowSpan)
             args.putSerializable("key", key)
             fragment.arguments = args
             return fragment

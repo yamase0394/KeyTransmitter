@@ -11,43 +11,39 @@ import kotlin.concurrent.thread
  * キーの名前をレシーバーに送信するためのクラス
  */
 object KeyTransmitter {
-    private var ip: String? = null
-    private var port: Int = 0
+    //private const val TAG  = "KeyTransmitter"
 
+    var ip: String? = null
+        set
+    var port: Int = 0
+        set
+
+    private var isSending = false
+
+    @Synchronized
     fun send(keyStringList: List<String>) {
-        if (keyStringList.isEmpty()) {
-            Log.d("KeyTransmitter", "list is empty")
+        if (isSending || keyStringList.isEmpty()) {
             return
         }
 
-        var sendMsg = ""
-        keyStringList.forEach { keyStr ->
-            sendMsg += keyStr + ","
-        }
+        isSending = true
 
-        try {
+        thread {
+            var sendMsg = ""
+            keyStringList.forEach { keyStr -> sendMsg += keyStr + "," }
+
             val sendByte = sendMsg.toByteArray(Charset.forName("UTF-8"))
 
-            thread {
-                Log.d("KeyTransmitter", "start sending")
+            try {
                 DatagramSocket().use { sendSocket ->
                     val sendPacket = DatagramPacket(sendByte, sendByte.size, InetSocketAddress(ip, port))
                     sendSocket.send(sendPacket)
                 }
-                Log.d("KeyTransmitter", "complete sending")
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isSending = false
             }
-
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
-
-    }
-
-    fun setIp(ip: String?) {
-        this.ip = ip
-    }
-
-    fun setPort(port: Int) {
-        this.port = port
     }
 }
