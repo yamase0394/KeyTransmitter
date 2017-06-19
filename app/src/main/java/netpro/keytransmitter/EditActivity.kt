@@ -40,14 +40,12 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
 
         //RecyclerViewに登録するデータの初期化
         var datasource: List<Key> = ArrayList()
-        val dir = filesDir
-        val filePath = dir.absolutePath + File.separator + "keyboard"
-        val file = File(filePath)
+        val file = File(filesDir.absolutePath + File.separator + "keyboard")
         //シリアライズされたデータがあるか
         if (file.exists()) {
             try {
-                val `in` = ObjectInputStream(FileInputStream(file))
-                datasource = `in`.readObject() as List<Key>
+                val ois = ObjectInputStream(FileInputStream(file))
+                datasource = ois.readObject() as List<Key>
                 Log.d("main", "deserialize")
             } catch (e: IOException) {
                 e.printStackTrace()
@@ -62,12 +60,12 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         }
 
         recyclerAdapter = EditKeyRecyclerViewAdapter()
-        recyclerAdapter!!.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, key: Key ->
+        recyclerAdapter.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, key: Key ->
             val dialogFragment = EditMenuDialogFragment.newInstance(position, key.description)
             dialogFragment.show(supportFragmentManager, "fragment_dialog")
         })
-        recyclerAdapter!!.addAllView(datasource)
-        recyclerView!!.adapter = recyclerAdapter
+        recyclerAdapter.addAllView(datasource)
+        recyclerView.adapter = recyclerAdapter
 
         //子View間の幅を設定する
         recyclerView!!.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
@@ -77,7 +75,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
                 val fromPos = viewHolder.adapterPosition
                 val toPos = target.adapterPosition
-                recyclerAdapter!!.move(fromPos, toPos)
+                recyclerAdapter.move(fromPos, toPos)
                 return true
             }
 
@@ -90,7 +88,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
             }
         })
         itemDecor.attachToRecyclerView(recyclerView)
@@ -115,11 +112,9 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             }
             R.id.save -> {
                 //datasourceをシリアライズ
-                val dir = filesDir
-                val filePath = dir.absolutePath + File.separator + "keyboard"
                 try {
-                    val out = ObjectOutputStream(FileOutputStream(filePath))
-                    out.writeObject(recyclerAdapter!!.keyList)
+                    val out = ObjectOutputStream(FileOutputStream(filesDir.absolutePath + File.separator + "keyboard"))
+                    out.writeObject(recyclerAdapter.keyList)
                     out.flush()
                     out.close()
                     Log.d("main", "serialize")
@@ -127,7 +122,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
-
             }
         }
         finish()
@@ -147,10 +141,10 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     override fun onListItemClicked(position: Int, selectedStr: String) {
         when (selectedStr) {
             "編集" -> {
-                val dialogFragment = EditKeyDialogFragment.newInstance(position, recyclerAdapter!!.emptySpace, recyclerAdapter!!.get(position))
+                val dialogFragment = EditKeyDialogFragment.newInstance(position, recyclerAdapter.emptySpace, recyclerAdapter[position])
                 dialogFragment.show(supportFragmentManager, "fragment_dialog")
             }
-            "削除" -> recyclerAdapter!!.removeView(position, true)
+            "削除" -> recyclerAdapter.removeView(position, true)
         }
     }
 
@@ -159,17 +153,17 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
 
         //keySize分のEmptyKeyを削除する
         var i = 0
-        while (i < recyclerAdapter!!.itemCount) {
-            if (recyclerAdapter!!.get(i) is EmptyKey) {
-                val empty = recyclerAdapter!!.get(i)
+        while (i < recyclerAdapter.itemCount) {
+            if (recyclerAdapter[i] is EmptyKey) {
+                val empty = recyclerAdapter[i]
                 keySize -= empty.columnSpan * empty.rowSpan
-                recyclerAdapter!!.removeView(i, false)
+                recyclerAdapter.removeView(i, false)
                 //削除された要素の位置を詰めてしまうのでインデックスを巻き戻す
                 i--
             }
 
             if (keySize == 0) {
-                recyclerAdapter!!.addView(key)
+                recyclerAdapter.addView(key)
                 break
             }
 
@@ -177,9 +171,9 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             if (keySize < 0) {
                 keySize *= -1
                 for (j in 0..keySize - 1) {
-                    recyclerAdapter!!.addView(EmptyKey())
+                    recyclerAdapter.addView(EmptyKey())
                 }
-                recyclerAdapter!!.addView(key)
+                recyclerAdapter.addView(key)
                 break
             }
             i++
@@ -187,19 +181,19 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     }
 
     override fun onKeyUpdated(position: Int, key: Key) {
-        recyclerAdapter!!.removeView(position, true)
+        recyclerAdapter.removeView(position, true)
 
         var keySize = key.columnSpan * key.rowSpan
         //keySize分のEmptyKeyを削除する
-        for (i in recyclerAdapter!!.itemCount - 1 downTo 0) {
-            if (recyclerAdapter!!.get(i) is EmptyKey) {
-                val empty = recyclerAdapter!!.get(i)
+        for (i in recyclerAdapter.itemCount - 1 downTo 0) {
+            if (recyclerAdapter[i] is EmptyKey) {
+                val empty = recyclerAdapter[i]
                 keySize -= empty.columnSpan * empty.rowSpan
-                recyclerAdapter!!.removeView(i, false)
+                recyclerAdapter.removeView(i, false)
             }
 
             if (keySize == 0) {
-                recyclerAdapter!!.addView(position, key)
+                recyclerAdapter.addView(position, key)
                 break
             }
 
@@ -207,9 +201,9 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             if (keySize < 0) {
                 keySize *= -1
                 for (j in 0..keySize - 1) {
-                    recyclerAdapter!!.addView(EmptyKey())
+                    recyclerAdapter.addView(EmptyKey())
                 }
-                recyclerAdapter!!.addView(position, key)
+                recyclerAdapter.addView(position, key)
                 break
             }
         }

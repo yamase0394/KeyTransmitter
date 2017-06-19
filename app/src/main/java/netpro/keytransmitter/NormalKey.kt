@@ -13,7 +13,6 @@ class NormalKey(columnSpan: Int, rowSpan: Int, description: String, type: Key.Ty
     }
 
     companion object {
-
         private val serialVersionUID = 8877586457351207301L
     }
 }

@@ -441,7 +441,6 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
     }
 
     companion object {
-
         fun newInstance(emptySpace: Int): AddKeyDialogFragment {
             val fragment = AddKeyDialogFragment()
             val args = Bundle()

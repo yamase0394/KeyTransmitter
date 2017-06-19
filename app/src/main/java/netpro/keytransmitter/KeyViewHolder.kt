@@ -12,7 +12,7 @@ import android.widget.TextView
  */
 class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener, View.OnLongClickListener {
     private val description: TextView
-    private var key: Key? = null
+    private lateinit var key: Key
 
     init {
         val cardView = itemView.findViewById(R.id.cardView) as CardView
@@ -26,34 +26,33 @@ class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.On
 
         if (key is EmptyKey) {
             description.visibility = View.INVISIBLE
-            return
+        } else {
+            description.text = key.description
+            description.visibility = View.VISIBLE
         }
-
-        description.text = key.description
-        description.visibility = View.VISIBLE
     }
 
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         when (motionEvent.action) {
-            MotionEvent.ACTION_DOWN -> key!!.onActionDown(view, motionEvent)
+            MotionEvent.ACTION_DOWN -> key.onActionDown(view, motionEvent)
             MotionEvent.ACTION_CANCEL -> {
                 Log.d("keyViewHolder", "cancel")
-                key!!.onCancel()
+                key.onCancel()
             }
             MotionEvent.ACTION_UP -> {
                 Log.d("keyViewHolder", "up")
-                key!!.onActionUp(view, motionEvent)
+                key.onActionUp(view, motionEvent)
             }
             MotionEvent.ACTION_MOVE -> {
                 Log.d("keyViewHolder", "move")
-                key!!.onMove(view, motionEvent)
+                key.onMove(view, motionEvent)
             }
         }
         return false
     }
 
     override fun onLongClick(view: View): Boolean {
-        key!!.onLongClick()
+        key.onLongClick()
         return false
     }
 }

@@ -19,8 +19,8 @@ class ControlKnob
  */
 (columnSpan: Int, rowSpan: Int, description: String, type: Key.Type) : Key(columnSpan, rowSpan, description, type) {
 
-    var rotateLeftKeyCodeList: List<String>
-    var rotateRightKeyCodeList: List<String>
+    var rotateLeftKeyCodeList: List<String> = ArrayList<String>()
+    var rotateRightKeyCodeList: List<String> = ArrayList<String>()
 
     //前のタッチ座標
     private var preX: Float = 0.toFloat()
@@ -28,11 +28,6 @@ class ControlKnob
     //MotionEventから得られるx,y座標が入れ替わることによりつまみが揺れることを抑える
     private var preGapIsPositive: Boolean = false
     private var preGapIsNegative: Boolean = false
-
-    init {
-        rotateLeftKeyCodeList = ArrayList<String>()
-        rotateRightKeyCodeList = ArrayList<String>()
-    }
 
     override fun addKeyCode(keyCode: String) {}
 
@@ -87,6 +82,9 @@ class ControlKnob
             }
             send(rotateLeftKeyCodeList)
         }
+
+        //ImageView knobImageView = (ImageView) view.findViewById(R.id.image_view_knob);
+        //knobImageView.setRotation(knobImageView.getRotation() + (float) (gap));
     }
 
     companion object {

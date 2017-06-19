@@ -56,7 +56,6 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 e.printStackTrace()
             }
-
         }
         recyclerAdapter = KeyRecyclerViewAdapter()
         recyclerAdapter.addAllView(datasource)

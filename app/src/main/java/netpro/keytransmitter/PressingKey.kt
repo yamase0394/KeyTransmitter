@@ -20,7 +20,7 @@ class PressingKey
         Thread(Executer()).start()
     }
 
-    override fun onActionUp(view: View, event: MotionEvent) {
+    override fun onActionUp(view: View, motionEvent: MotionEvent) {
         running = false
     }
 

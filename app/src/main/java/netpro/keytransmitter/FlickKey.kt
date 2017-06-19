@@ -29,26 +29,22 @@ class FlickKey
     private var nowTouchedY: Float = 0.toFloat()
 
     //それぞれの方向へフリックしたときに送信するキー情報
-    var flickUpKeyStrList: List<String> = mutableListOf()
-    var flickDownKeyStrList: List<String> = mutableListOf()
-    var flickRightKeyStrList: List<String> = mutableListOf()
-    var flickLeftKeyStrList: List<String> = mutableListOf()
+    lateinit var flickUpKeyStrList: List<String>
+    lateinit var flickDownKeyStrList: List<String>
+    lateinit var flickRightKeyStrList: List<String>
+    lateinit var flickLeftKeyStrList: List<String>
 
     //フリック距離
-    val adjust:Int
+    val adjust:Int = adjust
 
-    init {
-        this.adjust = adjust
+    override fun onActionDown(view: View, motionEvent: MotionEvent) {
+        startTouchX = motionEvent.x
+        startTouchY = motionEvent.y
     }
 
-    override fun onActionDown(view: View, event: MotionEvent) {
-        startTouchX = event.x
-        startTouchY = event.y
-    }
-
-    override fun onActionUp(view: View, event: MotionEvent) {
-        nowTouchedX = event.x
-        nowTouchedY = event.y
+    override fun onActionUp(view: View, motionEvent: MotionEvent) {
+        nowTouchedX = motionEvent.x
+        nowTouchedY = motionEvent.y
 
         //上
         if (startTouchY > nowTouchedY) {

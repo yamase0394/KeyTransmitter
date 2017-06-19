@@ -16,6 +16,29 @@ import java.util.*
 
 class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
+    val alphabetList = ArrayList<String>()
+
+    init {
+        val ALPHABET_SIZE = 'Z' - 'A'
+        var alphabet = 'A'
+        for (i in 0..ALPHABET_SIZE) {
+            alphabetList.add(alphabet++.toString())
+        }
+    }
+
+    val numberList = ArrayList<String>()
+
+    init {
+        for (i in 0..9) {
+            numberList.add(i.toString())
+        }
+    }
+
+    val controlKeyList = Arrays.asList("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp", "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab")
+    val functionKeyList = (1..12).mapTo(ArrayList<String>()) { "F" + it.toString() }
+    //val symbolList = Arrays.asList(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
+    val specialList = Arrays.asList("VolUp", "VolDown", "VolMute")
+
     private var listener: OnKeyUpdatedListener? = null
     private val keyCodeViewList = ArrayList<View>()
     private val rightKeyCodeViewList = ArrayList<View>()
@@ -127,7 +150,6 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         rowCountSpinner.adapter = adapter
         rowCountSpinner.setSelection(key.rowSpan - 1)
 
-
         val addKeyLayout = view.findViewById(R.id.addKeyLayout) as LinearLayout
         val addRightKeyLayout = view.findViewById(R.id.addRightKeyLayout) as LinearLayout
         val addLeftKeyLayout = view.findViewById(R.id.addLeftKeyLayout) as LinearLayout
@@ -153,7 +175,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
                 if (type == Key.Type.EMPTY) {
                     //名前と説明を必須にしない
-                    descriptionTil.setErrorEnabled(false);
+                    descriptionTil.isErrorEnabled = false;
                     //キーを追加できなくする
                     addKeyLayout.visibility = GONE
                 } else {
@@ -197,257 +219,30 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             }
 
             override fun onNothingSelected(adapterView: AdapterView<*>) {
-
             }
         }
         keyTypeSpinner.setSelection(key.type.ordinal)
 
-        val alphabetList = ArrayList<String>()
-        val ALPHABET_SIZE = 'Z' - 'A'
-        var alphabet = 'A'
-        for (i in 0..ALPHABET_SIZE) {
-            alphabetList.add(alphabet++.toString())
-        }
-
-        val numberList = ArrayList<String>()
-        for (i in 0..9) {
-            numberList.add(i.toString())
-        }
-
-        val controlKeyList = Arrays.asList("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp", "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab")
-
-        val functionKeyList = (1..12).mapTo(ArrayList<String>()) { "F" + it.toString() }
-
-        val symbolList = Arrays.asList(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
-
-        val specialList = Arrays.asList("VolUp", "VolDown", "VolMute")
-
         val keyCodesLayout = view.findViewById(R.id.keyCodesLayout) as LinearLayout
-        for (keyCode in key.keyCodeList) {
-            var spinnerContents: List<String> = ArrayList()
-            when {
-                alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                numberList.contains(keyCode) -> spinnerContents = numberList
-                controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                specialList.contains(keyCode) -> spinnerContents = specialList
-            //symbolList.contains(keyCode) -> spinnerContents = symbolList
-            }
-
-            val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-            val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-            val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-            spinner.adapter = arrayAdapter
-            spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-            val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-            removeButton.setOnClickListener { view ->
-                val parent = view.parent as ViewGroup
-                keyCodeViewList.remove(parent)
-                parent.removeAllViews()
-            }
-            keyCodesLayout.addView(addKeyCodeView)
-            keyCodeViewList.add(addKeyCodeView)
-        }
-
         val rightKeyCodesLayout = view.findViewById(R.id.rotate_right_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.KNOB) {
-            for (keyCode in (key as ControlKnob).rotateRightKeyCodeList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    rightKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                rightKeyCodesLayout.addView(addKeyCodeView)
-                rightKeyCodeViewList.add(addKeyCodeView)
-            }
-        }
-
         val leftKeyCodesLayout = view.findViewById(R.id.rotate_left_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.KNOB) {
-            for (keyCode in (key as ControlKnob).rotateLeftKeyCodeList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    leftKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                leftKeyCodesLayout.addView(addKeyCodeView)
-                leftKeyCodeViewList.add(addKeyCodeView)
-            }
-        }
-
         val flickUpKeyCodesLayout = view.findViewById(R.id.flick_up_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.FLICK) {
-            for (keyCode in (key as FlickKey).flickUpKeyStrList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    flickUpKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                flickUpKeyCodesLayout.addView(addKeyCodeView)
-                flickUpKeyCodeViewList.add(addKeyCodeView)
-            }
-        }
-
         val flickDownKeyCodesLayout = view.findViewById(R.id.flick_down_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.FLICK) {
-            for (keyCode in (key as FlickKey).flickDownKeyStrList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    flickDownKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                flickDownKeyCodesLayout.addView(addKeyCodeView)
-                flickDownKeyCodeViewList.add(addKeyCodeView)
-            }
-        }
-
         val flickRightKeyCodesLayout = view.findViewById(R.id.flick_right_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.FLICK) {
-            for (keyCode in (key as FlickKey).flickRightKeyStrList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    flickRightKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                flickRightKeyCodesLayout.addView(addKeyCodeView)
-                flickRightKeyCodeViewList.add(addKeyCodeView)
-            }
-        }
-
         val flickLeftKeyCodesLayout = view.findViewById(R.id.flick_left_keyCodesLayout) as LinearLayout
-        if (key.type == Key.Type.FLICK) {
-            for (keyCode in (key as FlickKey).flickLeftKeyStrList) {
-                var spinnerContents: List<String> = ArrayList()
-                when {
-                    alphabetList.contains(keyCode) -> spinnerContents = alphabetList
-                    numberList.contains(keyCode) -> spinnerContents = numberList
-                    controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
-                    functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
-                    specialList.contains(keyCode) -> spinnerContents = specialList
-                //symbolList.contains(keyCode) -> spinnerContents = symbolList
-                }
-
-                val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
-
-                val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
-                val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
-
-                arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                spinner.adapter = arrayAdapter
-                spinner.setSelection(arrayAdapter.getPosition(keyCode))
-
-                val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
-                removeButton.setOnClickListener { view ->
-                    val parent = view.parent as ViewGroup
-                    flickLeftKeyCodeViewList.remove(parent)
-                    parent.removeAllViews()
-                }
-                flickLeftKeyCodesLayout.addView(addKeyCodeView)
-                flickLeftKeyCodeViewList.add(addKeyCodeView)
+        when (key.type) {
+            Key.Type.RELEASED, Key.Type.LONGPRESS, Key.Type.PRESSING -> initKeyCodesLayout(key.keyCodeList, keyCodeViewList, keyCodesLayout)
+            Key.Type.KNOB -> {
+                initKeyCodesLayout((key as ControlKnob).rotateRightKeyCodeList, rightKeyCodeViewList, rightKeyCodesLayout)
+                initKeyCodesLayout(key.rotateLeftKeyCodeList, leftKeyCodeViewList, leftKeyCodesLayout)
             }
+            Key.Type.FLICK -> {
+                initKeyCodesLayout((key as FlickKey).flickUpKeyStrList, flickUpKeyCodeViewList, flickUpKeyCodesLayout)
+                initKeyCodesLayout(key.flickDownKeyStrList, flickDownKeyCodeViewList, flickDownKeyCodesLayout)
+                initKeyCodesLayout(key.flickRightKeyStrList, flickRightKeyCodeViewList, flickRightKeyCodesLayout)
+                initKeyCodesLayout(key.flickLeftKeyStrList, flickLeftKeyCodeViewList, flickLeftKeyCodesLayout)
+            }
+
         }
 
         val addButton = view.findViewById(R.id.addButton) as Button
@@ -482,8 +277,20 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             val type = Key.Type.toType(keyTypeSpinner.selectedItem as String)
             var key: Key = EmptyKey()
             when (type) {
-                Key.Type.RELEASED -> key = NormalKey(columnCount, rowCount, description, type)
-                Key.Type.LONGPRESS -> key = LongPressKey(columnCount, rowCount, description, type)
+                Key.Type.RELEASED -> {
+                    key = NormalKey(columnCount, rowCount, description, type)
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
+                    }
+                }
+                Key.Type.LONGPRESS -> {
+                    key = LongPressKey(columnCount, rowCount, description, type)
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
+                    }
+                }
                 Key.Type.PRESSING -> {
                     val editInterval = view.findViewById(R.id.interval) as EditText
                     val interval: Int
@@ -495,30 +302,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     }
 
                     key = PressingKey(columnCount, rowCount, description, type, interval.toLong())
-                }
-                Key.Type.KNOB -> key = ControlKnob(columnCount, rowCount, description, type)
-                Key.Type.FLICK -> {
-                    val adjustEditText = view.findViewById(R.id.edit_text_adjust) as EditText
-                    val adjust: Int
-                    try {
-                        adjust = Integer.parseInt(adjustEditText.text.toString())
-                    } catch (e: NumberFormatException) {
-                        showErrorDialog("フリック距離を入力してください")
-                        return@OnClickListener
+                    for (v in keyCodeViewList) {
+                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
+                        key.addKeyCode(spinner.selectedItem as String)
                     }
-
-                    key = FlickKey(columnCount, rowCount, description, type, adjust)
                 }
-                Key.Type.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
-            }
+                Key.Type.KNOB -> {
+                    key = ControlKnob(columnCount, rowCount, description, type)
 
-            if (key !is EmptyKey) {
-                if (description.length == 0) {
-                    showErrorDialog("入力が不完全です");
-                    return@OnClickListener
-                }
-
-                if (key is ControlKnob) {
                     val rightKeyStrList = ArrayList<String>()
                     for (v in rightKeyCodeViewList) {
                         val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
@@ -537,7 +328,19 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                         */
                     key.rotateRightKeyCodeList = rightKeyStrList
                     key.rotateLeftKeyCodeList = leftKeyStrList
-                } else if (key is FlickKey) {
+                }
+                Key.Type.FLICK -> {
+                    val adjustEditText = view.findViewById(R.id.edit_text_adjust) as EditText
+                    val adjust: Int
+                    try {
+                        adjust = Integer.parseInt(adjustEditText.text.toString())
+                    } catch (e: NumberFormatException) {
+                        showErrorDialog("フリック距離を入力してください")
+                        return@OnClickListener
+                    }
+
+                    key = FlickKey(columnCount, rowCount, description, type, adjust)
+
                     val flickUpKeyStrList = ArrayList<String>()
                     for (v in flickUpKeyCodeViewList) {
                         val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
@@ -568,23 +371,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     key.flickDownKeyStrList = flickDownKeyStrList
                     key.flickRightKeyStrList = flickRightKeyStrList
                     key.flickLeftKeyStrList = flickLeftKeyStrList
-                } else {
-
-                    /*
-
-                        if (keyCodeViewList.size() <= 0) {
-                            showErrorDialog("少なくとも1つの入力キーが必要です");
-                            return;
-                        }
-                        */
-
-                    for (v in keyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        key.addKeyCode(spinner.selectedItem as String)
-                    }
                 }
+                Key.Type.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
             }
 
+            if (key !is EmptyKey && description.isNullOrEmpty()) {
+                showErrorDialog("入力が不完全です");
+                return@OnClickListener
+            }
 
             if (columnCount * rowCount > arguments.getInt("emptySpace")) {
                 val shortage = columnCount * rowCount - arguments.getInt("emptySpace")
@@ -596,8 +390,8 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             dismiss()
         })
 
-        val cacelButton = view.findViewById(R.id.cancelButton) as Button
-        cacelButton.setOnClickListener { dismiss() }
+        val cancelButton = view.findViewById(R.id.cancelButton) as Button
+        cancelButton.setOnClickListener { dismiss() }
 
         val builder = AlertDialog.Builder(activity)
         builder.setTitle("キー編集").setView(view)
@@ -627,7 +421,6 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         dialog.window!!.attributes = layoutParams
     }
 
-
     override fun onPause() {
         super.onPause()
         dismiss()
@@ -642,7 +435,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         }
     }
 
-    private fun initAddButton(keyCodesLayout: LinearLayout, addKeyCodeButton: Button, keyCodeViewList: MutableList<View>) {
+    private fun initAddButton(keyCodesLayout: LinearLayout, addKeyCodeButton: Button, keyViewList: MutableList<View>) {
         addKeyCodeButton.setOnClickListener {
             //Spinnerに入れるキーコードの種類を選択させるダイアログを生成
             val builder = AlertDialog.Builder(context)
@@ -655,26 +448,17 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                 //選択結果に応じてSpinnerの選択肢を変える
                 when (which) {
                 //アルファベット
-                    0 -> {
-                        val ALPHABET_SIZE = 'Z' - 'A'
-                        var alphabet = 'A'
-                        for (i in 0..ALPHABET_SIZE) {
-                            adapter.add(alphabet++.toString())
-                        }
-                    }
+                    0 -> adapter.addAll(alphabetList)
                 //数字
-                    1 -> for (i in 0..9) {
-                        adapter.add(i.toString())
-                    }
+                    1 -> adapter.addAll(numberList)
                 //制御キー
-                    2 -> adapter.addAll("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp", "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab")
+                    2 -> adapter.addAll(controlKeyList)
                 //ファンクションキー
-                    3 -> for (i in 1..12) {
-                        adapter.add("F" + i.toString())
-                    }
-                    4 -> adapter.addAll("VolUp", "VolDown", "VolMute")
+                    3 -> adapter.addAll(functionKeyList)
+                //特殊
+                    4 -> adapter.addAll(specialList)
                 //記号
-                //4 -> adapter.addAll(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
+                //5 -> adapter.addAll(symbolList)
                 }
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 spinner.adapter = adapter
@@ -683,13 +467,45 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                 val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
                 removeButton.setOnClickListener { view ->
                     val parent = view.parent as ViewGroup
-                    keyCodeViewList.remove(parent)
+                    keyViewList.remove(parent)
                     parent.removeAllViews()
                 }
                 keyCodesLayout.addView(addKeyCodeView)
-                keyCodeViewList.add(addKeyCodeView)
+                keyViewList.add(addKeyCodeView)
             }
             builder.show()
+        }
+    }
+
+    private fun initKeyCodesLayout(keyStrList: List<String>, keyViewList: MutableList<View>, keyCodesLayout: LinearLayout) {
+        for (keyCode in keyStrList) {
+            var spinnerContents: List<String> = ArrayList()
+            when {
+                alphabetList.contains(keyCode) -> spinnerContents = alphabetList
+                numberList.contains(keyCode) -> spinnerContents = numberList
+                controlKeyList.contains(keyCode) -> spinnerContents = controlKeyList
+                functionKeyList.contains(keyCode) -> spinnerContents = functionKeyList
+                specialList.contains(keyCode) -> spinnerContents = specialList
+            //symbolList.contains(keyCode) -> spinnerContents = symbolList
+            }
+
+            val addKeyCodeView = View.inflate(activity, R.layout.layout_add_key_code, null)
+
+            val spinner = addKeyCodeView.findViewById(R.id.keyCodeSpinner) as Spinner
+
+            val arrayAdapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, spinnerContents)
+            arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = arrayAdapter
+            spinner.setSelection(arrayAdapter.getPosition(keyCode))
+
+            val removeButton = addKeyCodeView.findViewById(R.id.removeButton) as Button
+            removeButton.setOnClickListener { view ->
+                val parent = view.parent as ViewGroup
+                keyViewList.remove(parent)
+                parent.removeAllViews()
+            }
+            keyCodesLayout.addView(addKeyCodeView)
+            keyViewList.add(addKeyCodeView)
         }
     }
 
