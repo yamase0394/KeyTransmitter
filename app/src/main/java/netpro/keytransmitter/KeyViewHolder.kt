@@ -2,7 +2,6 @@ package netpro.keytransmitter
 
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
@@ -12,7 +11,7 @@ import android.widget.TextView
  */
 class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener, View.OnLongClickListener {
     private val description: TextView
-    private lateinit var key: Key
+    private lateinit var key: BaseKey
 
     init {
         val cardView = itemView.findViewById(R.id.cardView) as CardView
@@ -21,7 +20,7 @@ class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.On
         description = itemView.findViewById(R.id.description) as TextView
     }
 
-    fun setKey(key: Key) {
+    fun setKey(key: BaseKey) {
         this.key = key
 
         if (key is EmptyKey) {
@@ -35,18 +34,9 @@ class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.On
     override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> key.onActionDown(view, motionEvent)
-            MotionEvent.ACTION_CANCEL -> {
-                Log.d("keyViewHolder", "cancel")
-                key.onCancel()
-            }
-            MotionEvent.ACTION_UP -> {
-                Log.d("keyViewHolder", "up")
-                key.onActionUp(view, motionEvent)
-            }
-            MotionEvent.ACTION_MOVE -> {
-                Log.d("keyViewHolder", "move")
-                key.onMove(view, motionEvent)
-            }
+            MotionEvent.ACTION_CANCEL -> key.onCancel()
+            MotionEvent.ACTION_UP -> key.onActionUp(view, motionEvent)
+            MotionEvent.ACTION_MOVE -> key.onMove(view, motionEvent)
         }
         return false
     }

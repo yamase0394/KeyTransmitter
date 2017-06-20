@@ -9,7 +9,7 @@ import java.util.*
  * MainActivityのRecyclerViewの
  */
 class KeyRecyclerViewAdapter : RecyclerView.Adapter<KeyViewHolder>() {
-    var keyList: MutableList<Key> = LinkedList()
+    var keyList: MutableList<BaseKey> = LinkedList()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -29,18 +29,18 @@ class KeyRecyclerViewAdapter : RecyclerView.Adapter<KeyViewHolder>() {
         return keyList.size
     }
 
-    fun addView(key: Key) {
-        keyList.add(key)
+    fun addView(abstractKey: BaseKey) {
+        keyList.add(abstractKey)
         notifyItemInserted(itemCount - 1)
     }
 
-    fun addAllView(list: List<Key>) {
+    fun addAllView(list: List<BaseKey>) {
         val preSize = itemCount
         keyList.addAll(list)
         notifyItemRangeInserted(preSize, list.size - 1)
     }
 
-    operator fun get(index: Int): Key {
+    operator fun get(index: Int): BaseKey {
         return keyList[index]
     }
 }

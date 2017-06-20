@@ -3,10 +3,12 @@ package netpro.keytransmitter
 /**
  * 長押ししたときにキーを送信するボタンです
  */
-class LongPressKey(columnSpan: Int, rowSpan: Int, description: String, type: Key.Type) : Key(columnSpan, rowSpan, description, type) {
+class LongPressKey(columnSpan: Int, rowSpan: Int, description: String, type: KeyType) : BaseKey(columnSpan, rowSpan, description, type) {
+
+    val NORMAL = "normal"
 
     override fun onLongClick() {
-        send(keyCodeList)
+        send(keyCodesMap[NORMAL])
     }
 
     companion object {

@@ -10,14 +10,16 @@ class PressingKey
 /**
  * @param inputInterval キーを送信する間隔(ミリ秒)
  */
-(columnSpan: Int, rowSpan: Int, description: String, type: Key.Type, val inputInterval: Long) : Key(columnSpan, rowSpan, description, type) {
+(columnSpan: Int, rowSpan: Int, description: String, type: KeyType, val inputInterval: Long) : BaseKey(columnSpan, rowSpan, description, type) {
+
+    val NORMAL = "normal"
 
     private var running: Boolean = false
 
     override fun onActionDown(view: View, motionEvent: MotionEvent) {
         running = false
         running = true
-        Thread(Executer()).start()
+        Thread(Executor()).start()
     }
 
     override fun onActionUp(view: View, motionEvent: MotionEvent) {
@@ -28,10 +30,10 @@ class PressingKey
         running = false
     }
 
-    private inner class Executer : Runnable {
+    private inner class Executor : Runnable {
         override fun run() {
             while (running) {
-                send(keyCodeList)
+                send(keyCodesMap[NORMAL])
                 try {
                     Thread.sleep(inputInterval)
                 } catch (e: InterruptedException) {
@@ -40,5 +42,9 @@ class PressingKey
 
             }
         }
+    }
+
+    companion object {
+        private val serialVersionUID = 7854266457351207301L
     }
 }

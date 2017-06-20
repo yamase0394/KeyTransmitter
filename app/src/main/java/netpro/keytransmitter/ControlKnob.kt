@@ -2,7 +2,6 @@ package netpro.keytransmitter
 
 import android.view.MotionEvent
 import android.view.View
-import java.util.*
 
 /**
  * 左右それぞれの方向への回転時にキーを送信するつまみです
@@ -17,10 +16,10 @@ class ControlKnob
  * *
  * @param type
  */
-(columnSpan: Int, rowSpan: Int, description: String, type: Key.Type) : Key(columnSpan, rowSpan, description, type) {
+(columnSpan: Int, rowSpan: Int, description: String, type: KeyType) : BaseKey(columnSpan, rowSpan, description, type) {
 
-    var rotateLeftKeyCodeList: List<String> = ArrayList<String>()
-    var rotateRightKeyCodeList: List<String> = ArrayList<String>()
+    val LEFT = "left"
+    val RIGHT = "right"
 
     //前のタッチ座標
     private var preX: Float = 0.toFloat()
@@ -28,8 +27,6 @@ class ControlKnob
     //MotionEventから得られるx,y座標が入れ替わることによりつまみが揺れることを抑える
     private var preGapIsPositive: Boolean = false
     private var preGapIsNegative: Boolean = false
-
-    override fun addKeyCode(keyCode: String) {}
 
     override fun onActionDown(view: View, motionEvent: MotionEvent) {
         preX = motionEvent.x
@@ -71,7 +68,7 @@ class ControlKnob
                 preGapIsNegative = false
                 return
             }
-            send(rotateRightKeyCodeList)
+            send(keyCodesMap[RIGHT])
         } else if (gap == 0) {
             return
         } else {
@@ -80,7 +77,7 @@ class ControlKnob
                 preGapIsNegative = true
                 return
             }
-            send(rotateLeftKeyCodeList)
+            send(keyCodesMap[LEFT])
         }
 
         //ImageView knobImageView = (ImageView) view.findViewById(R.id.image_view_knob);

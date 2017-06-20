@@ -35,15 +35,12 @@ class EditMenuDialogFragment : android.support.v4.app.DialogFragment() {
 
         val dialog = dialog
         val layoutParams = dialog.window!!.attributes
-
         //display metricsでdpのもと(?)を作る
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
-
         //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
         val dialogWidth = 300 * metrics.scaledDensity
         layoutParams.width = dialogWidth.toInt()
-
         //LayoutParamsをセットする
         dialog.window!!.attributes = layoutParams
     }
@@ -54,7 +51,7 @@ class EditMenuDialogFragment : android.support.v4.app.DialogFragment() {
     }
 
     interface OnListItemClickListener {
-        fun onListItemClicked(positionm: Int, selectedStr: String)
+        fun onListItemClicked(position: Int, selectedStr: String)
     }
 
     override fun onAttach(context: Context?) {
@@ -67,7 +64,6 @@ class EditMenuDialogFragment : android.support.v4.app.DialogFragment() {
     }
 
     companion object {
-
         fun newInstance(position: Int, message: String): EditMenuDialogFragment {
             val fragment = EditMenuDialogFragment()
             val args = Bundle()

@@ -8,7 +8,7 @@ import android.view.ViewGroup
  * EditActivityのRecyclerViewのアダプタ
  */
 class EditKeyRecyclerViewAdapter : RecyclerView.Adapter<EditKeyViewHolder>() {
-    var keyList: MutableList<Key> = mutableListOf()
+    var keyList: MutableList<BaseKey> = mutableListOf()
 
     private lateinit var listener: OnRecyclerClickListener
 
@@ -27,17 +27,22 @@ class EditKeyRecyclerViewAdapter : RecyclerView.Adapter<EditKeyViewHolder>() {
         return keyList.size
     }
 
-    fun addView(key: Key) {
-        keyList.add(key)
+    fun addView(abstractKey: BaseKey) {
+        keyList.add(abstractKey)
         notifyItemInserted(itemCount - 1)
     }
 
-    fun addView(index: Int, key: Key) {
-        keyList.add(index, key)
-        notifyItemInserted(index)
+    fun addView(index: Int, key: BaseKey) {
+        if(index >= keyList.size){
+            keyList.add(key)
+            notifyItemInserted(keyList.size - 1)
+        } else {
+            keyList.add(index, key)
+            notifyItemInserted(index)
+        }
     }
 
-    fun addAllView(list: List<Key>) {
+    fun addAllView(list: List<BaseKey>) {
         val preSize = itemCount
         keyList.addAll(list)
         notifyItemRangeInserted(preSize, list.size - 1)
@@ -66,7 +71,7 @@ class EditKeyRecyclerViewAdapter : RecyclerView.Adapter<EditKeyViewHolder>() {
         keyList.add(toIndex, temp)
     }
 
-    operator fun get(index: Int): Key {
+    operator fun get(index: Int): BaseKey {
         return keyList[index]
     }
 

@@ -8,6 +8,7 @@ import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
@@ -16,30 +17,14 @@ import java.util.*
 
 class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
-    val alphabetList = ArrayList<String>()
+    private lateinit var alphabetList: List<String>
+    private lateinit var numberList: List<String>
+    private lateinit var controlKeyList: List<String>
+    private lateinit var functionKeyList: List<String>
+    private lateinit var specialList: List<String>
+    //private lateinit var symbolList: List<String>
 
-    init {
-        val ALPHABET_SIZE = 'Z' - 'A'
-        var alphabet = 'A'
-        for (i in 0..ALPHABET_SIZE) {
-            alphabetList.add(alphabet++.toString())
-        }
-    }
-
-    val numberList = ArrayList<String>()
-
-    init {
-        for (i in 0..9) {
-            numberList.add(i.toString())
-        }
-    }
-
-    val controlKeyList = Arrays.asList("Backspace", "Enter", "Shift", "Ctrl", "Alt", "Pause", "Space", "PageUp", "PageDown", "End", "Home", "←", "↑", "→", "↓", "PrintScreen", "Insert", "Delete", "Win", "NumLock", "ScrollLock", "Esc", "Tab")
-    val functionKeyList = (1..12).mapTo(ArrayList<String>()) { "F" + it.toString() }
-    //val symbolList = Arrays.asList(":", ";", "+", ",", "-", "=", ".", "/", "@", "[", "\\", "]", "^", "_")
-    val specialList = Arrays.asList("VolUp", "VolDown", "VolMute")
-
-    private var listener: OnKeyUpdatedListener? = null
+    private lateinit var listener: OnKeyUpdatedListener
     private val keyCodeViewList = ArrayList<View>()
     private val rightKeyCodeViewList = ArrayList<View>()
     private val leftKeyCodeViewList = ArrayList<View>()
@@ -50,7 +35,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view = View.inflate(activity, R.layout.dialog_fragment_edit_key, null)
-        val key = arguments.getSerializable("key") as Key
+        val key = arguments.getSerializable("key") as BaseKey
 
         val intervalLayout = view.findViewById(R.id.intervalLayout) as TextInputLayout
         intervalLayout.isErrorEnabled = true
@@ -63,16 +48,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         }
         intervalLayout.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
             }
 
             override fun afterTextChanged(editable: Editable) {
                 try {
-                    Integer.parseInt(editable.toString())
+                    editable.toString().toInt()
                 } catch (e: NumberFormatException) {
                     intervalLayout.isErrorEnabled = true
                     intervalLayout.error = "必須"
@@ -94,11 +77,9 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         }
         adjustTextInputLayout.editText!!.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
             }
 
             override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
-
             }
 
             override fun afterTextChanged(editable: Editable) {
@@ -126,8 +107,8 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             override fun afterTextChanged(editable: Editable) {
                 val keyTypeSpinner = view.findViewById(R.id.keyTypeSpinner) as Spinner
                 val str = keyTypeSpinner.selectedItem as String
-                val type = Key.Type.toType(str)
-                if (type != Key.Type.EMPTY && editable.length == 0) {
+                val type = KeyType.toType(str)
+                if (type != KeyType.EMPTY && editable.isEmpty()) {
                     descriptionTil.isErrorEnabled = true
                     descriptionTil.error = "必須"
                 } else {
@@ -159,7 +140,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val addFlickLeftKeyLayout = view.findViewById(R.id.addFlickLeftKeyLayout) as LinearLayout
 
         val keyTypeSpinner = view.findViewById(R.id.keyTypeSpinner) as Spinner
-        val keyTypes = Key.Type.values()
+        val keyTypes = KeyType.values()
         val keyDescriptions = arrayOfNulls<String>(keyTypes.size)
         for (i in keyDescriptions.indices) {
             keyDescriptions[i] = keyTypes[i].description
@@ -171,29 +152,29 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             override fun onItemSelected(adapterView: AdapterView<*>, view: View, i: Int, l: Long) {
                 val spinner = adapterView as Spinner
                 val description = spinner.selectedItem as String
-                val type = Key.Type.toType(description)
+                val type = KeyType.toType(description)
 
-                if (type == Key.Type.EMPTY) {
+                if (type == KeyType.EMPTY) {
                     //名前と説明を必須にしない
                     descriptionTil.isErrorEnabled = false;
                     //キーを追加できなくする
                     addKeyLayout.visibility = GONE
                 } else {
-                    if (descriptionTil.editText!!.text.length == 0) {
+                    if (descriptionTil.editText!!.text.isEmpty()) {
                         descriptionTil.isErrorEnabled = true
                         descriptionTil.error = "必須"
                     }
                     addKeyLayout.visibility = View.VISIBLE
                 }
 
-                if (type == Key.Type.PRESSING) {
+                if (type == KeyType.PRESSING) {
                     //キー送信間隔入力ボックスを表示
                     intervalLayout.visibility = View.VISIBLE
                 } else {
                     intervalLayout.visibility = GONE
                 }
 
-                if (type == Key.Type.KNOB) {
+                if (type == KeyType.KNOB) {
                     addRightKeyLayout.visibility = View.VISIBLE
                     addLeftKeyLayout.visibility = View.VISIBLE
                     addKeyLayout.visibility = GONE
@@ -202,7 +183,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     addLeftKeyLayout.visibility = View.GONE
                 }
 
-                if (type == Key.Type.FLICK) {
+                if (type == KeyType.FLICK) {
                     addFlickUpKeyLayout.visibility = View.VISIBLE
                     addFlickDownKeyLayout.visibility = View.VISIBLE
                     addFlickRightKeyLayout.visibility = View.VISIBLE
@@ -231,38 +212,31 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val flickRightKeyCodesLayout = view.findViewById(R.id.flick_right_keyCodesLayout) as LinearLayout
         val flickLeftKeyCodesLayout = view.findViewById(R.id.flick_left_keyCodesLayout) as LinearLayout
         when (key.type) {
-            Key.Type.RELEASED, Key.Type.LONGPRESS, Key.Type.PRESSING -> initKeyCodesLayout(key.keyCodeList, keyCodeViewList, keyCodesLayout)
-            Key.Type.KNOB -> {
-                initKeyCodesLayout((key as ControlKnob).rotateRightKeyCodeList, rightKeyCodeViewList, rightKeyCodesLayout)
-                initKeyCodesLayout(key.rotateLeftKeyCodeList, leftKeyCodeViewList, leftKeyCodesLayout)
+            KeyType.RELEASED, KeyType.LONG_PRESS, KeyType.PRESSING -> initKeyCodesLayout(key.keyCodesMap["normal"] ?: listOf(), keyCodeViewList, keyCodesLayout)
+            KeyType.KNOB -> {
+                initKeyCodesLayout(key.keyCodesMap["right"] ?: listOf(), rightKeyCodeViewList, rightKeyCodesLayout)
+                initKeyCodesLayout(key.keyCodesMap["left"] ?: listOf(), leftKeyCodeViewList, leftKeyCodesLayout)
             }
-            Key.Type.FLICK -> {
-                initKeyCodesLayout((key as FlickKey).flickUpKeyStrList, flickUpKeyCodeViewList, flickUpKeyCodesLayout)
-                initKeyCodesLayout(key.flickDownKeyStrList, flickDownKeyCodeViewList, flickDownKeyCodesLayout)
-                initKeyCodesLayout(key.flickRightKeyStrList, flickRightKeyCodeViewList, flickRightKeyCodesLayout)
-                initKeyCodesLayout(key.flickLeftKeyStrList, flickLeftKeyCodeViewList, flickLeftKeyCodesLayout)
+            KeyType.FLICK -> {
+                initKeyCodesLayout(key.keyCodesMap["up"] ?: listOf(), flickUpKeyCodeViewList, flickUpKeyCodesLayout)
+                initKeyCodesLayout(key.keyCodesMap["down"] ?: listOf(), flickDownKeyCodeViewList, flickDownKeyCodesLayout)
+                initKeyCodesLayout(key.keyCodesMap["right"] ?: listOf(), flickRightKeyCodeViewList, flickRightKeyCodesLayout)
+                initKeyCodesLayout(key.keyCodesMap["left"] ?: listOf(), flickLeftKeyCodeViewList, flickLeftKeyCodesLayout)
             }
-
         }
 
         val addButton = view.findViewById(R.id.addButton) as Button
         initAddButton(keyCodesLayout, addButton, keyCodeViewList)
-
         val addRightButton = view.findViewById(R.id.button_add_rotate_right_key) as Button
         initAddButton(rightKeyCodesLayout, addRightButton, rightKeyCodeViewList)
-
         val addLeftButton = view.findViewById(R.id.button_add_rotate_left_key) as Button
         initAddButton(leftKeyCodesLayout, addLeftButton, leftKeyCodeViewList)
-
         val addFlickUpButton = view.findViewById(R.id.button_add_flick_up_key) as Button
         initAddButton(flickUpKeyCodesLayout, addFlickUpButton, flickUpKeyCodeViewList)
-
         val addFlickDownButton = view.findViewById(R.id.button_add_flick_down_key) as Button
         initAddButton(flickDownKeyCodesLayout, addFlickDownButton, flickDownKeyCodeViewList)
-
         val addFlickRightButton = view.findViewById(R.id.button_add_flick_right_key) as Button
         initAddButton(flickRightKeyCodesLayout, addFlickRightButton, flickRightKeyCodeViewList)
-
         val addFlickLeftButton = view.findViewById(R.id.button_add_flick_left_key) as Button
         initAddButton(flickLeftKeyCodesLayout, addFlickLeftButton, flickLeftKeyCodeViewList)
 
@@ -274,62 +248,36 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             val columnCount = columnCountSpinner.selectedItem as Int
             val rowCount = rowCountSpinner.selectedItem as Int
 
-            val type = Key.Type.toType(keyTypeSpinner.selectedItem as String)
-            var key: Key = EmptyKey()
+            val type = KeyType.toType(keyTypeSpinner.selectedItem as String)
+            var key: BaseKey = EmptyKey()
             when (type) {
-                Key.Type.RELEASED -> {
+                KeyType.RELEASED -> {
                     key = NormalKey(columnCount, rowCount, description, type)
-                    for (v in keyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        key.addKeyCode(spinner.selectedItem as String)
-                    }
+                    key.keyCodesMap.put(key.NORMAL, toKeyStrList(keyCodeViewList))
                 }
-                Key.Type.LONGPRESS -> {
+                KeyType.LONG_PRESS -> {
                     key = LongPressKey(columnCount, rowCount, description, type)
-                    for (v in keyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        key.addKeyCode(spinner.selectedItem as String)
-                    }
+                    key.keyCodesMap.put(key.NORMAL, toKeyStrList(keyCodeViewList))
                 }
-                Key.Type.PRESSING -> {
+                KeyType.PRESSING -> {
                     val editInterval = view.findViewById(R.id.interval) as EditText
-                    val interval: Int
+                    val interval: Long
                     try {
-                        interval = Integer.parseInt(editInterval.text.toString())
+                        interval = editInterval.text.toString().toLong()
                     } catch (e: NumberFormatException) {
-                        showErrorDialog("入力が不完全です")
+                        showErrorDialog("キー送信間隔を入力してください")
                         return@OnClickListener
                     }
 
-                    key = PressingKey(columnCount, rowCount, description, type, interval.toLong())
-                    for (v in keyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        key.addKeyCode(spinner.selectedItem as String)
-                    }
+                    key = PressingKey(columnCount, rowCount, description, type, interval)
+                    key.keyCodesMap.put(key.NORMAL, toKeyStrList(keyCodeViewList))
                 }
-                Key.Type.KNOB -> {
+                KeyType.KNOB -> {
                     key = ControlKnob(columnCount, rowCount, description, type)
-
-                    val rightKeyStrList = ArrayList<String>()
-                    for (v in rightKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        rightKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    val leftKeyStrList = ArrayList<String>()
-                    for (v in leftKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        leftKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    /*
-                        if (rightKeyStrList.isEmpty() || leftKeyStrList.isEmpty()) {
-                            showErrorDialog("少なくとも1つの入力キーが必要です");
-                            return;
-                        }
-                        */
-                    key.rotateRightKeyCodeList = rightKeyStrList
-                    key.rotateLeftKeyCodeList = leftKeyStrList
+                    key.keyCodesMap.put(key.RIGHT, toKeyStrList(rightKeyCodeViewList))
+                    key.keyCodesMap.put(key.LEFT, toKeyStrList(leftKeyCodeViewList))
                 }
-                Key.Type.FLICK -> {
+                KeyType.FLICK -> {
                     val adjustEditText = view.findViewById(R.id.edit_text_adjust) as EditText
                     val adjust: Int
                     try {
@@ -340,39 +288,12 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                     }
 
                     key = FlickKey(columnCount, rowCount, description, type, adjust)
-
-                    val flickUpKeyStrList = ArrayList<String>()
-                    for (v in flickUpKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        flickUpKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    val flickDownKeyStrList = ArrayList<String>()
-                    for (v in flickDownKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        flickDownKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    val flickRightKeyStrList = ArrayList<String>()
-                    for (v in flickRightKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        flickRightKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    val flickLeftKeyStrList = ArrayList<String>()
-                    for (v in flickLeftKeyCodeViewList) {
-                        val spinner = v.findViewById(R.id.keyCodeSpinner) as Spinner
-                        flickLeftKeyStrList.add(spinner.selectedItem as String)
-                    }
-                    /*
-                        if (rightKeyStrList.isEmpty() || leftKeyStrList.isEmpty()) {
-                            showErrorDialog("少なくとも1つの入力キーが必要です");
-                            return;
-                        }
-                        */
-                    key.flickUpKeyStrList = flickUpKeyStrList
-                    key.flickDownKeyStrList = flickDownKeyStrList
-                    key.flickRightKeyStrList = flickRightKeyStrList
-                    key.flickLeftKeyStrList = flickLeftKeyStrList
+                    key.keyCodesMap.put(key.UP, toKeyStrList(flickUpKeyCodeViewList))
+                    key.keyCodesMap.put(key.DOWN, toKeyStrList(flickDownKeyCodeViewList))
+                    key.keyCodesMap.put(key.RIGHT, toKeyStrList(flickRightKeyCodeViewList))
+                    key.keyCodesMap.put(key.LEFT, toKeyStrList(flickLeftKeyCodeViewList))
                 }
-                Key.Type.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
+                KeyType.EMPTY -> key = EmptyKey(columnCount, rowCount, description, type)
             }
 
             if (key !is EmptyKey && description.isNullOrEmpty()) {
@@ -380,13 +301,17 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                 return@OnClickListener
             }
 
+            Log.d("column", columnCount.toString())
+            Log.d("row", rowCount.toString())
+            Log.d("empty", arguments.getInt("emptySpace").toString())
+
             if (columnCount * rowCount > arguments.getInt("emptySpace")) {
                 val shortage = columnCount * rowCount - arguments.getInt("emptySpace")
                 showErrorDialog("スペースが " + shortage + "足りません")
                 return@OnClickListener
             }
 
-            listener!!.onKeyUpdated(arguments.getInt("position"), key)
+            listener.onKeyUpdated(arguments.getInt("position"), key)
             dismiss()
         })
 
@@ -408,15 +333,12 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
 
         val dialog = dialog
         val layoutParams = dialog.window!!.attributes
-
         //display metricsでdpのもと(?)を作る
         val metrics = DisplayMetrics()
         activity.windowManager.defaultDisplay.getMetrics(metrics)
-
         //LayoutParamsにdpを計算して適用(今回は横幅300dp)(※metrics.scaledDensityの返り値はfloat)
         val dialogWidth = 300 * metrics.scaledDensity
         layoutParams.width = dialogWidth.toInt()
-
         //LayoutParamsをセットする
         dialog.window!!.attributes = layoutParams
     }
@@ -429,10 +351,17 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         if (context is OnKeyUpdatedListener) {
-            listener = context as OnKeyUpdatedListener?
+            listener = context
         } else {
             throw RuntimeException(context!!.toString() + " must implement OnKeyUpdatedListener")
         }
+
+        alphabetList = resources.getStringArray(R.array.alphabet).asList()
+        numberList = resources.getStringArray(R.array.number).asList()
+        controlKeyList = resources.getStringArray(R.array.control_key).asList()
+        functionKeyList = resources.getStringArray(R.array.function_key).asList()
+        specialList = resources.getStringArray(R.array.special_key).asList()
+        //symbolList = resources.getStringArray(R.array.symbol).asList()
     }
 
     private fun initAddButton(keyCodesLayout: LinearLayout, addKeyCodeButton: Button, keyViewList: MutableList<View>) {
@@ -509,17 +438,26 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         }
     }
 
+    private fun toKeyStrList(keyViewList: List<View>): List<String> {
+        return keyViewList
+                .map { it.findViewById(R.id.keyCodeSpinner) as Spinner }
+                .map { it.selectedItem as String }
+    }
+
     interface OnKeyUpdatedListener {
-        fun onKeyUpdated(position: Int, key: Key)
+        fun onKeyUpdated(position: Int, abstractKey: BaseKey)
     }
 
     companion object {
-
-        fun newInstance(position: Int, emptySpace: Int, key: Key): EditKeyDialogFragment {
+        fun newInstance(position: Int, emptySpace: Int, key: BaseKey): EditKeyDialogFragment {
             val fragment = EditKeyDialogFragment()
             val args = Bundle()
             args.putInt("position", position)
-            args.putInt("emptySpace", emptySpace + key.columnSpan * key.rowSpan)
+            if(key.type == KeyType.EMPTY){
+                args.putInt("emptySpace", emptySpace)
+            }else {
+                args.putInt("emptySpace", emptySpace + key.columnSpan * key.rowSpan)
+            }
             args.putSerializable("key", key)
             fragment.arguments = args
             return fragment

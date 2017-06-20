@@ -1,6 +1,5 @@
 package netpro.keytransmitter
 
-import android.util.Log
 import java.net.DatagramPacket
 import java.net.DatagramSocket
 import java.net.InetSocketAddress

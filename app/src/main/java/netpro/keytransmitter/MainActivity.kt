@@ -31,14 +31,14 @@ class MainActivity : AppCompatActivity() {
             SpannedGridLayoutManager.SpanInfo(key.columnSpan, key.rowSpan)
         }, 4, 1f)
 
-        var datasource: MutableList<Key> = ArrayList()
+        var datasource: MutableList<BaseKey> = ArrayList()
         val dir = filesDir
         val filePath = dir.absolutePath + File.separator + "keyboard"
         val file = File(filePath)
         if (file.exists()) {
             try {
                 val input = ObjectInputStream(FileInputStream(file))
-                datasource = input.readObject() as MutableList<Key>
+                datasource = input.readObject() as MutableList<BaseKey>
             } catch (e: IOException) {
                 e.printStackTrace()
             } catch (e: ClassNotFoundException) {
@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         //EditActivityでの編集結果を反映
         if (resultCode == Activity.RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
             val dir = filesDir
@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
             if (file.exists()) {
                 try {
                     val input = ObjectInputStream(FileInputStream(file))
-                    val keyList = input.readObject() as MutableList<Key>
+                    val keyList = input.readObject() as MutableList<BaseKey>
                     recyclerAdapter = KeyRecyclerViewAdapter()
                     recyclerAdapter.keyList = keyList
                     recyclerView.swapAdapter(recyclerAdapter, false)

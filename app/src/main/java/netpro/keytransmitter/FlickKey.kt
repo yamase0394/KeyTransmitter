@@ -18,7 +18,12 @@ class FlickKey
  * *
  * @param adjust フリック距離
  */
-(columnSpan: Int, rowSpan: Int, description: String, type: Key.Type, adjust: Int) : Key(columnSpan, rowSpan, description, type) {
+(columnSpan: Int, rowSpan: Int, description: String, type: KeyType, val adjust: Int) : BaseKey(columnSpan, rowSpan, description, type) {
+
+    val UP = "up"
+    val DOWN = "down"
+    val RIGHT = "right"
+    val LEFT = "left"
 
     // 最後にタッチされた座標
     private var startTouchX: Float = 0.toFloat()
@@ -27,15 +32,6 @@ class FlickKey
     // 現在タッチ中の座標
     private var nowTouchedX: Float = 0.toFloat()
     private var nowTouchedY: Float = 0.toFloat()
-
-    //それぞれの方向へフリックしたときに送信するキー情報
-    lateinit var flickUpKeyStrList: List<String>
-    lateinit var flickDownKeyStrList: List<String>
-    lateinit var flickRightKeyStrList: List<String>
-    lateinit var flickLeftKeyStrList: List<String>
-
-    //フリック距離
-    val adjust:Int = adjust
 
     override fun onActionDown(view: View, motionEvent: MotionEvent) {
         startTouchX = motionEvent.x
@@ -54,13 +50,13 @@ class FlickKey
                     if (startTouchY > nowTouchedY + adjust) {
                         //Log.v("Flick", "左上上");
                         // 上フリック時の処理を記述する
-                        send(flickUpKeyStrList!!)
+                        send(keyCodesMap[UP])
                     }
                 } else if (startTouchY - nowTouchedY < startTouchX - nowTouchedX) {
                     if (startTouchX > nowTouchedX + adjust) {
                         //Log.v("Flick", "左上左");
                         // 左フリック時の処理を記述する
-                        send(flickLeftKeyStrList!!)
+                        send(keyCodesMap[LEFT])
                     }
                 }
                 //右
@@ -69,13 +65,13 @@ class FlickKey
                     if (startTouchY > nowTouchedY + adjust) {
                         //Log.v("Flick", "右上上");
                         // 上フリック時の処理を記述する
-                        send(flickUpKeyStrList!!)
+                        send(keyCodesMap[UP])
                     }
                 } else if (startTouchY - nowTouchedY < nowTouchedX - startTouchX) {
                     if (startTouchX + adjust < nowTouchedX) {
                         //Log.v("Flick", "右上右");
                         // 右フリック時の処理を記述する
-                        send(flickRightKeyStrList!!)
+                        send(keyCodesMap[RIGHT])
                     }
                 }
             }
@@ -87,13 +83,13 @@ class FlickKey
                     if (startTouchY + adjust < nowTouchedY) {
                         //Log.v("Flick", "左下下");
                         // 下フリック時の処理を記述する
-                        send(flickDownKeyStrList!!)
+                        send(keyCodesMap[DOWN])
                     }
                 } else if (nowTouchedY - startTouchY < startTouchX - nowTouchedX) {
                     if (startTouchX > nowTouchedX + adjust) {
                         //Log.v("Flick", "左下左");
                         // 左フリック時の処理を記述する
-                        send(flickLeftKeyStrList!!)
+                        send(keyCodesMap[LEFT])
                     }
                 }
                 //右
@@ -102,20 +98,18 @@ class FlickKey
                     if (startTouchY + adjust < nowTouchedY) {
                         //Log.v("Flick", "右下下");
                         // 下フリック時の処理を記述する
-                        send(flickDownKeyStrList!!)
+                        send(keyCodesMap[DOWN])
                     }
                 } else if (nowTouchedY - startTouchY < nowTouchedX - startTouchX) {
                     if (startTouchX + adjust < nowTouchedX) {
                         //Log.v("Flick", "右下右");
                         // 右フリック時の処理を記述する
-                        send(flickRightKeyStrList!!)
+                        send(keyCodesMap[RIGHT])
                     }
                 }
             }
         }
     }
-
-    override fun addKeyCode(keyCode: String) {}
 
     companion object {
         private val serialVersionUID = -5499597086336673528L

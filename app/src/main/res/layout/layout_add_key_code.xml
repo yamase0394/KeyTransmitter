@@ -14,11 +14,11 @@
         android:spinnerMode="dialog"/>
 
     <Button
-        android:layout_height="wrap_content"
         android:id="@+id/removeButton"
-        android:background="@android:drawable/ic_delete"
         android:layout_width="wrap_content"
-        android:minWidth="25dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_clear"
         android:minHeight="25dp"
+        android:minWidth="25dp"
         app:layout_marginLeftPercent="50%"/>
 </android.support.percent.PercentRelativeLayout>

@@ -10,24 +10,24 @@ import android.widget.TextView
  */
 class EditKeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private val description: TextView
-    private lateinit var key: Key
+    private lateinit var abstractKey: BaseKey
     private lateinit var listener: OnRecyclerClickListener
 
     init {
         val cardView = itemView.findViewById(R.id.cardView) as CardView
         cardView.setOnClickListener {
-            listener.onClickListener(adapterPosition, key)
+            listener.onClickListener(adapterPosition, abstractKey)
         }
         description = itemView.findViewById(R.id.description) as TextView
     }
 
-    fun setKey(key: Key) {
-        this.key = key
+    fun setKey(abstractKey: BaseKey) {
+        this.abstractKey = abstractKey
 
-        if (key is EmptyKey) {
+        if (abstractKey is EmptyKey) {
             description.visibility = View.INVISIBLE
         } else {
-            description.text = key.description
+            description.text = abstractKey.description
             description.visibility = View.VISIBLE
         }
     }

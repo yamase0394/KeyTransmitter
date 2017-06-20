@@ -81,15 +81,15 @@
                         android:layout_gravity="right"/>
 
                     <Button
+                        android:id="@+id/addButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/addButton"
-                        android:background="@android:drawable/ic_input_add"
-                        android:minHeight="30dp"
-                        android:minWidth="30dp"
-                        android:layout_marginRight="20dp"
                         android:layout_gravity="right"
-                        android:layout_marginLeft="5dp"/>
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginRight="20dp"
+                        android:background="@drawable/ic_add"
+                        android:minHeight="30dp"
+                        android:minWidth="30dp"/>
                 </LinearLayout>
             </LinearLayout>
 
@@ -134,7 +134,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_rotate_right_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"
@@ -184,7 +184,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_rotate_left_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"
@@ -234,7 +234,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_flick_up_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"
@@ -284,7 +284,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_flick_down_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"
@@ -334,7 +334,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_flick_raight_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"
@@ -384,7 +384,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:id="@+id/button_add_flick_left_key"
-                        android:background="@android:drawable/ic_input_add"
+                        android:background="@drawable/ic_add"
                         android:minHeight="30dp"
                         android:minWidth="30dp"
                         android:layout_marginRight="20dp"

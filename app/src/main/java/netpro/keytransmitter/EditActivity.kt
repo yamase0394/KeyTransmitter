@@ -1,6 +1,7 @@
 package netpro.keytransmitter
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -21,6 +22,8 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     private lateinit var recyclerAdapter: EditKeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
 
+    private var isEdited = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
@@ -39,20 +42,19 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         }, 4, 1f)
 
         //RecyclerViewに登録するデータの初期化
-        var datasource: List<Key> = ArrayList()
+        var datasource: List<BaseKey> = ArrayList()
         val file = File(filesDir.absolutePath + File.separator + "keyboard")
         //シリアライズされたデータがあるか
         if (file.exists()) {
             try {
                 val ois = ObjectInputStream(FileInputStream(file))
-                datasource = ois.readObject() as List<Key>
+                datasource = ois.readObject() as List<BaseKey>
                 Log.d("main", "deserialize")
             } catch (e: IOException) {
                 e.printStackTrace()
             } catch (e: ClassNotFoundException) {
                 e.printStackTrace()
             }
-
         } else {
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
@@ -60,15 +62,15 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         }
 
         recyclerAdapter = EditKeyRecyclerViewAdapter()
-        recyclerAdapter.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, key: Key ->
-            val dialogFragment = EditMenuDialogFragment.newInstance(position, key.description)
+        recyclerAdapter.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, abstractKey: BaseKey ->
+            val dialogFragment = EditMenuDialogFragment.newInstance(position, abstractKey.description)
             dialogFragment.show(supportFragmentManager, "fragment_dialog")
         })
         recyclerAdapter.addAllView(datasource)
         recyclerView.adapter = recyclerAdapter
 
         //子View間の幅を設定する
-        recyclerView!!.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
+        recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
 
         //子Viewをドラッグで移動できるようにする
         val itemDecor = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
@@ -95,8 +97,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         //キー追加ボタン
         val button = findViewById(R.id.addViewButton) as FloatingActionButton
         button.setOnClickListener {
-            Log.d("edit", "add")
-            val dialogFragment = AddKeyDialogFragment.newInstance(recyclerAdapter!!.emptySpace)
+            val dialogFragment = AddKeyDialogFragment.newInstance(recyclerAdapter.emptySpace)
             dialogFragment.show(supportFragmentManager, "fragment_dialog")
         }
     }
@@ -109,6 +110,17 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home, R.id.cancel -> {
+                if (isEdited) {
+                    AlertDialog.Builder(this@EditActivity)
+                            .setMessage("変更を破棄して終了しますか？")
+                            .setPositiveButton("Yes", { _, _ ->
+                                finish()
+                                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                            })
+                            .setNegativeButton("No", null)
+                            .show()
+                    return super.onOptionsItemSelected(item)
+                }
             }
             R.id.save -> {
                 //datasourceをシリアライズ
@@ -131,9 +143,21 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-            return true
+            if (isEdited) {
+                AlertDialog.Builder(this@EditActivity)
+                        .setMessage("変更を破棄して終了しますか？")
+                        .setPositiveButton("Yes", { _, _ ->
+                            finish()
+                            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                        })
+                        .setNegativeButton("No", null)
+                        .show()
+                return super.onKeyDown(keyCode, event)
+            } else {
+                finish()
+                overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
+                return true
+            }
         }
         return false
     }
@@ -144,12 +168,15 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 val dialogFragment = EditKeyDialogFragment.newInstance(position, recyclerAdapter.emptySpace, recyclerAdapter[position])
                 dialogFragment.show(supportFragmentManager, "fragment_dialog")
             }
-            "削除" -> recyclerAdapter.removeView(position, true)
+            "削除" -> {
+                recyclerAdapter.removeView(position, true)
+                isEdited = true
+            }
         }
     }
 
-    override fun onKeyGenerated(key: Key) {
-        var keySize = key.columnSpan * key.rowSpan
+    override fun onKeyGenerated(abstractKey: BaseKey) {
+        var keySize = abstractKey.columnSpan * abstractKey.rowSpan
 
         //keySize分のEmptyKeyを削除する
         var i = 0
@@ -163,7 +190,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             }
 
             if (keySize == 0) {
-                recyclerAdapter.addView(key)
+                recyclerAdapter.addView(abstractKey)
                 break
             }
 
@@ -173,17 +200,19 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 for (j in 0..keySize - 1) {
                     recyclerAdapter.addView(EmptyKey())
                 }
-                recyclerAdapter.addView(key)
+                recyclerAdapter.addView(abstractKey)
                 break
             }
             i++
         }
+
+        isEdited = true
     }
 
-    override fun onKeyUpdated(position: Int, key: Key) {
+    override fun onKeyUpdated(position: Int, abstractKey: BaseKey) {
         recyclerAdapter.removeView(position, true)
 
-        var keySize = key.columnSpan * key.rowSpan
+        var keySize = abstractKey.columnSpan * abstractKey.rowSpan
         //keySize分のEmptyKeyを削除する
         for (i in recyclerAdapter.itemCount - 1 downTo 0) {
             if (recyclerAdapter[i] is EmptyKey) {
@@ -193,7 +222,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             }
 
             if (keySize == 0) {
-                recyclerAdapter.addView(position, key)
+                recyclerAdapter.addView(position, abstractKey)
                 break
             }
 
@@ -203,10 +232,12 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 for (j in 0..keySize - 1) {
                     recyclerAdapter.addView(EmptyKey())
                 }
-                recyclerAdapter.addView(position, key)
+                recyclerAdapter.addView(position, abstractKey)
                 break
             }
         }
+
+        isEdited = true
     }
 }
 
