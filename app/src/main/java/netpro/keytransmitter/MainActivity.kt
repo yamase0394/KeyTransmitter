@@ -7,6 +7,7 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Base64
 import android.view.Menu
 import android.view.MenuItem
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
@@ -16,6 +17,7 @@ import java.util.*
 class MainActivity : AppCompatActivity() {
     private lateinit var recyclerAdapter: KeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
+    private lateinit var keyStoreManager: RSAManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,8 +66,15 @@ class MainActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        KeyTransmitter.ip = sp.getString("ip", null)
-        KeyTransmitter.port = sp.getInt("port", 8080)
+        keyStoreManager = RSAManager.getInstance(applicationContext)
+        val cipherText = sp.getString("pass", "")
+        var plainPass:String
+        if(cipherText.isNullOrEmpty()){
+            plainPass = ""
+        } else {
+            plainPass = String(keyStoreManager.decrypt(Base64.decode(cipherText, Base64.DEFAULT)))
+        }
+        KeyTransmitter.init(sp.getString("ip", null), sp.getInt("port", 8080), plainPass)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

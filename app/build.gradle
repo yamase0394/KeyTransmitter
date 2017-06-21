@@ -6,7 +6,7 @@ android {
     buildToolsVersion "25.0.0"
     defaultConfig {
         applicationId "netpro.keytransmitter"
-        minSdkVersion 17
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -32,7 +32,6 @@ dependencies {
     compile 'com.android.support:design:25.1.0'
     compile 'com.android.support:percent:25.1.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    compile 'com.jakewharton:kotterknife:0.1.0-SNAPSHOT'
 }
 repositories {
     mavenCentral()
