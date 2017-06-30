@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.app.Activity
 import android.content.Intent
@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
+import netpro.keytransmitter.R
 import java.io.*
 import java.util.*
 

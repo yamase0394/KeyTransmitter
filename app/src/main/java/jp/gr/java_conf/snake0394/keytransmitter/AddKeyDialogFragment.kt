@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.app.Dialog
 import android.content.Context
@@ -12,6 +12,7 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.*
+import netpro.keytransmitter.R
 import java.util.*
 
 class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {

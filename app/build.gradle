@@ -5,7 +5,7 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.0"
     defaultConfig {
-        applicationId "netpro.keytransmitter"
+        applicationId "jp.gr.java_conf.snake0394.keytransmitter"
         minSdkVersion 18
         targetSdkVersion 25
         versionCode 1

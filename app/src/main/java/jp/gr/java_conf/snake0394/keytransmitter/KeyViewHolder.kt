@@ -1,10 +1,11 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
+import netpro.keytransmitter.R
 
 /**
  * KeyRecyclerViewAdapterのViewHolder

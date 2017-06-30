@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 /**
  * 空を表すボタンです

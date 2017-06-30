@@ -5,7 +5,7 @@
     android:id="@+id/activity_configure"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="netpro.keytransmitter.ConfigureActivity">
+    tools:context="netpro.keytransmitter.jp.gr.java_conf.snake0394.keytransmitter.ConfigureActivity">
 
     <LinearLayout
         android:orientation="vertical"

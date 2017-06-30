@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 /**
  * Created by snake0394 on 2017/06/20.

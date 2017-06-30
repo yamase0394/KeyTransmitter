@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.content.Context
 import android.os.Build
@@ -31,9 +31,9 @@ object KeyTransmitter {
     private lateinit var context: Context
 
     fun run(ip: String, port: Int, context: Context) {
-        this.context = context
-        this.ip = ip
-        this.port = port
+        KeyTransmitter.context = context
+        KeyTransmitter.ip = ip
+        KeyTransmitter.port = port
         keyExchangeServer = KeyExchangeServer()
         keyExchangeServer.run()
     }
@@ -45,7 +45,7 @@ object KeyTransmitter {
     fun restart(ip: String, port: Int) {
         stop()
         Thread.sleep(100)
-        run(ip, port, this.context)
+        run(ip, port, context)
     }
 
     @Synchronized

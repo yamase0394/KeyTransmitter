@@ -1,4 +1,4 @@
-package netpro.keytransmitter
+package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.os.Bundle
 import android.preference.PreferenceManager
@@ -9,6 +9,7 @@ import android.util.Base64
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.widget.Button
+import netpro.keytransmitter.R
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.util.*
