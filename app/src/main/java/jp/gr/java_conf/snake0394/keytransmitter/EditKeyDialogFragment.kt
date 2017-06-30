@@ -13,7 +13,6 @@ import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
 import android.widget.*
-import netpro.keytransmitter.R
 import java.util.*
 
 class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {

@@ -14,7 +14,6 @@ import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
-import netpro.keytransmitter.R
 import java.io.*
 import java.util.*
 

@@ -32,8 +32,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-import netpro.keytransmitter.R;
-
+import jp.gr.java_conf.snake0394.keytransmitter.R;
 
 /**
  * A {@link RecyclerView.LayoutManager} which displays a regular grid (i.e. all cells are the same

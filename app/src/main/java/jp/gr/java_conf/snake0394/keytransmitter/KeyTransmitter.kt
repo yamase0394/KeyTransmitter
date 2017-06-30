@@ -34,6 +34,9 @@ object KeyTransmitter {
         KeyTransmitter.context = context
         KeyTransmitter.ip = ip
         KeyTransmitter.port = port
+        if(ip.isEmpty()){
+            return
+        }
         keyExchangeServer = KeyExchangeServer()
         keyExchangeServer.run()
     }

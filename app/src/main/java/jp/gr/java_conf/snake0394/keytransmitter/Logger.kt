@@ -2,7 +2,6 @@ package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.os.Debug
 import android.util.Log
-import netpro.keytransmitter.BuildConfig
 
 object Logger {
 

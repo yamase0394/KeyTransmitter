@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
-import netpro.keytransmitter.R
 import java.io.*
 import java.util.*
 
@@ -70,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        KeyTransmitter.run(sp.getString("ip", null), sp.getInt("port", 8080), applicationContext)
+        KeyTransmitter.run(sp.getString("ip", ""), sp.getInt("port", 8080), applicationContext)
     }
 
     override fun onDestroy() {

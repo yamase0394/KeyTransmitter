@@ -3,7 +3,6 @@ package jp.gr.java_conf.snake0394.keytransmitter
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import netpro.keytransmitter.R
 import java.util.*
 
 /**

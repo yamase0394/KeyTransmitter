@@ -9,7 +9,6 @@ import android.util.Base64
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.widget.Button
-import netpro.keytransmitter.R
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.util.*
