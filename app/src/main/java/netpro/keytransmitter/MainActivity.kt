@@ -7,7 +7,7 @@ import android.preference.PreferenceManager
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
-import android.util.Base64
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
@@ -15,13 +15,16 @@ import java.io.*
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
+    private val TAG = "MainActivity"
+
     private lateinit var recyclerAdapter: KeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
-    private lateinit var keyStoreManager: RSAManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Log.d(TAG, "onCreate")
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
@@ -66,15 +69,23 @@ class MainActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        keyStoreManager = RSAManager.getInstance(applicationContext)
-        val cipherText = sp.getString("pass", "")
-        var plainPass:String
-        if(cipherText.isNullOrEmpty()){
-            plainPass = ""
-        } else {
-            plainPass = String(keyStoreManager.decrypt(Base64.decode(cipherText, Base64.DEFAULT)))
-        }
-        KeyTransmitter.init(sp.getString("ip", null), sp.getInt("port", 8080), plainPass)
+        KeyTransmitter.run(sp.getString("ip", null), sp.getInt("port", 8080), applicationContext)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d(TAG, "onDestroy")
+        KeyTransmitter.stop()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.d(TAG, "onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -116,7 +127,6 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                 }
-
             }
         }
     }

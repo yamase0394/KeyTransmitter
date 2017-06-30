@@ -9,16 +9,17 @@ import android.util.Base64
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.widget.Button
+import java.nio.ByteBuffer
+import java.nio.CharBuffer
+import java.util.*
 
 class ConfigureActivity : AppCompatActivity() {
-
-    private lateinit var keyStoreManager: RSAManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_configure)
 
-        keyStoreManager = RSAManager.getInstance(applicationContext)
+        val keyStoreManager = KeyStoreManager.getInstance(applicationContext)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
@@ -36,25 +37,41 @@ class ConfigureActivity : AppCompatActivity() {
 
         val passTextInputLayout = findViewById(R.id.text_input_layout_pass) as TextInputLayout
         val cipherText = sp.getString("pass", "")
-        if (cipherText.isNullOrEmpty()) {
+        if (cipherText.isNullOrBlank()) {
             passTextInputLayout.editText!!.setText("")
         } else {
-            passTextInputLayout.editText!!.setText(String(keyStoreManager.decrypt(Base64.decode(cipherText, Base64.DEFAULT))))
+            val pwBytes = keyStoreManager.decrypt(Base64.decode(cipherText, Base64.DEFAULT))
+            val charBuf = Charsets.UTF_8.decode(ByteBuffer.wrap(pwBytes))
+            val pwChars = CharArray(charBuf.limit())
+            charBuf.get(pwChars)
+            passTextInputLayout.editText!!.setText(pwChars, 0, pwChars.size)
+            Arrays.fill(pwBytes, 0)
+            Arrays.fill(pwChars, ' ')
         }
 
         val saveBtn = findViewById(R.id.button_save) as Button
         saveBtn.setOnClickListener {
-            val ipStr = ipTextInputLayout.editText!!.text.toString()
-            val port = Integer.parseInt(portTextInputLayout.editText!!.text.toString())
-            val passStr = passTextInputLayout.editText!!.text.toString()
-
             val editor = sp.edit()
+
+            val ipStr = ipTextInputLayout.editText!!.text.toString()
             editor.putString("ip", ipStr)
+
+            val port = Integer.parseInt(portTextInputLayout.editText!!.text.toString())
             editor.putInt("port", port)
-            editor.putString("pass", Base64.encodeToString(keyStoreManager.encrypt(passStr.toByteArray()), Base64.DEFAULT))
+
+            val pwEditable = passTextInputLayout.editText!!.text
+            val pwChars = CharArray(pwEditable.length)
+            pwEditable.getChars(0, pwEditable.length, pwChars, 0)
+            val byteBuf = Charsets.UTF_8.encode(CharBuffer.wrap(pwChars))
+            val pwBytes = ByteArray(byteBuf.limit())
+            byteBuf.get(pwBytes)
+            editor.putString("pass", Base64.encodeToString(keyStoreManager.encrypt(pwBytes), Base64.DEFAULT))
+            Arrays.fill(pwChars, ' ')
+            Arrays.fill(pwBytes, 0)
+
             editor.apply()
 
-            KeyTransmitter.init(ipStr, port, passStr)
+            KeyTransmitter.restart(ipStr, port)
 
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)

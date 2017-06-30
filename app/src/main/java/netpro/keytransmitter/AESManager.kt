@@ -4,6 +4,7 @@ import android.util.Base64
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
+
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
@@ -13,46 +14,46 @@ import javax.crypto.spec.SecretKeySpec
 
 class AESManager {
 
-    val rawKey: ByteArray = initKey()
+    lateinit var rawKey: ByteArray
+        private set
+        get
 
-    /**
-     * Encrypt plain string and encode to Base64
+    init {
+        initKey()
+    }
 
-     * @param plain
-     * *
-     * @return IV?Encrypted
-     */
+    fun encrypt(plain: String, key: ByteArray): String {
+        return encrypt(plain.toByteArray(Charsets.UTF_8), key)
+    }
+
     fun encrypt(plain: String): String {
-        val keySpec = SecretKeySpec(rawKey, "AES")
+        return encrypt(plain, rawKey)
+    }
+
+    fun encrypt(plain: ByteArray, key: ByteArray): String {
+        val keySpec = SecretKeySpec(key, "AES")
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         cipher.init(Cipher.ENCRYPT_MODE, keySpec)
-        val encrypted = cipher.doFinal(plain.toByteArray())
-        return Base64.encodeToString(cipher.iv, Base64.DEFAULT) + "?" + Base64.encodeToString(encrypted, Base64.DEFAULT)
+        val encrypted = cipher.doFinal(plain)
+        return Base64.encodeToString(cipher.iv, Base64.NO_WRAP) + "?" + Base64.encodeToString(encrypted, Base64.NO_WRAP)
     }
 
-    /**
-     * Decrypt Base64 encoded encrypted string
-     *
-     * @param encrypted
-     * *
-     * @return
-     */
-    fun decrypt(iv:String, encrypted: String): String {
-        val enc = Base64.decode(encrypted.toByteArray(), Base64.DEFAULT)
-        val iv = Base64.decode(iv.toByteArray(), Base64.DEFAULT)
-        val keySpec = SecretKeySpec(rawKey, "AES")
+    fun decrypt(iv: ByteArray, encrypted: ByteArray): ByteArray {
+        return decrypt(iv, encrypted, rawKey)
+    }
+
+    fun decrypt(iv: ByteArray, encrypted: ByteArray, key: ByteArray): ByteArray {
+        val keySpec = SecretKeySpec(key, "AES")
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
         cipher.init(Cipher.DECRYPT_MODE, keySpec, IvParameterSpec(iv))
-        val decrypted = cipher.doFinal(enc)
-        return String(decrypted)
+        return cipher.doFinal(encrypted)
     }
 
-    private fun initKey(): ByteArray {
+    fun initKey() {
         val keygen = KeyGenerator.getInstance("AES")
         val random = SecureRandom.getInstance("SHA1PRNG")
         keygen.init(256, random)
         val key = keygen.generateKey()
-        val raw = key.encoded
-        return raw
+        rawKey = key.encoded
     }
 }
