@@ -8,7 +8,6 @@ import android.support.v7.app.AlertDialog
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.ViewGroup
@@ -300,10 +299,6 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
                 showErrorDialog("入力が不完全です");
                 return@OnClickListener
             }
-
-            Log.d("column", columnCount.toString())
-            Log.d("row", rowCount.toString())
-            Log.d("empty", arguments.getInt("emptySpace").toString())
 
             if (columnCount * rowCount > arguments.getInt("emptySpace")) {
                 val shortage = columnCount * rowCount - arguments.getInt("emptySpace")

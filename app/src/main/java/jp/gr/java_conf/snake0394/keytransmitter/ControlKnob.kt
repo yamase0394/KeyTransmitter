@@ -2,9 +2,10 @@ package jp.gr.java_conf.snake0394.keytransmitter
 
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 
 /**
- * 左右それぞれの方向への回転時にキーを送信するつまみです
+ * 左右それぞれの方向への回転時にキーを送信します
  */
 class ControlKnob
 /**
@@ -42,7 +43,7 @@ class ControlKnob
         preY = motionEvent.y
         //前のタッチ位置とviewの中心とのラジアン
         val atanA = Math.atan2(b.toDouble(), a.toDouble())
-        //現在ののタッチ位置とviewの中心とのラジアン
+        //現在のタッチ位置とviewの中心とのラジアン
         val atanB = Math.atan2(d.toDouble(), c.toDouble())
         var degreeA = Math.toDegrees(atanA)
         if (degreeA == 0.0 || degreeA == 360.0) {
@@ -80,8 +81,8 @@ class ControlKnob
             send(keyCodesMap[LEFT])
         }
 
-        //ImageView knobImageView = (ImageView) view.findViewById(R.id.image_view_knob);
-        //knobImageView.setRotation(knobImageView.getRotation() + (float) (gap));
+        val knobImageView = view.findViewById(R.id.image_knob) as ImageView
+        knobImageView.rotation = knobImageView.rotation + gap
     }
 
     companion object {

@@ -10,6 +10,9 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
 import java.io.*
 import java.util.*
@@ -19,6 +22,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var recyclerAdapter: KeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
+    private val adView:AdView by lazy { findViewById(R.id.adView) as AdView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,7 +30,14 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "onCreate")
 
+        MobileAds.initialize(this, "ca-app-pub-1067539886647773~9620833844");
+        val adRequest = AdRequest.Builder()
+                .addTestDevice("CB89206D3413270C73A3DBEA8C304BFC")
+                .build()
+        adView.loadAd(adRequest)
+
         val toolbar = findViewById(R.id.toolbar) as Toolbar
+        toolbar.title = "ProgrammableKeyboard"
         setSupportActionBar(toolbar)
 
         recyclerView = findViewById(R.id.recyclerview) as RecyclerView
@@ -66,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         recyclerAdapter.addAllView(datasource)
         recyclerView.adapter = recyclerAdapter
 
-        recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
+        recyclerView.addItemDecoration(SpaceItemDecoration(0, 10, 20, 0))
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         KeyTransmitter.run(sp.getString("ip", ""), sp.getInt("port", 8080), applicationContext)
@@ -74,17 +85,20 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        adView.destroy()
         Log.d(TAG, "onDestroy")
         KeyTransmitter.stop()
     }
 
     override fun onPause() {
         super.onPause()
+        adView.pause()
         Log.d(TAG, "onPause")
     }
 
     override fun onResume() {
         super.onResume()
+        adView.resume()
         Log.d(TAG, "onResume")
     }
 

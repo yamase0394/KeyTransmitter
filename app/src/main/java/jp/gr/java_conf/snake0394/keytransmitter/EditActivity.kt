@@ -29,15 +29,15 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         setContentView(R.layout.activity_edit)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
+        toolbar.title = "Edit"
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
-        supportActionBar!!.title = "編集モード"
 
         recyclerView = findViewById(R.id.recyclerview) as RecyclerView
         recyclerView.setHasFixedSize(false)
         recyclerView.layoutManager = SpannedGridLayoutManager(SpannedGridLayoutManager.GridSpanLookup { position ->
-            val key = recyclerAdapter.get(position)
+            val key = recyclerAdapter[position]
             SpannedGridLayoutManager.SpanInfo(key.columnSpan, key.rowSpan)
         }, 4, 1f)
 
@@ -70,7 +70,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         recyclerView.adapter = recyclerAdapter
 
         //子View間の幅を設定する
-        recyclerView.addItemDecoration(SpaceItemDecoration(0, 15, 20, 0))
+        recyclerView.addItemDecoration(SpaceItemDecoration(0, 10, 20, 0))
 
         //子Viewをドラッグで移動できるようにする
         val itemDecor = ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP or ItemTouchHelper.DOWN or ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT, ItemTouchHelper.RIGHT) {
@@ -129,7 +129,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                     out.writeObject(recyclerAdapter.keyList)
                     out.flush()
                     out.close()
-                    Log.d("main", "serialize")
                     setResult(Activity.RESULT_OK, Intent())
                 } catch (e: Exception) {
                     e.printStackTrace()

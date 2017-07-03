@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/tools"
-              xmlns:app2="http://schemas.android.com/apk/res-auto"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:id="@+id/layout"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -14,12 +13,20 @@
         android:layout_height="match_parent"
         android:clickable="true"
         android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@color/keyBackground"
         app:cardCornerRadius="10dp"
         app:cardUseCompatPadding="true">
 
         <android.support.percent.PercentRelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/image_knob"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/knob_gray"/>
 
             <LinearLayout
                 android:id="@+id/cardLayout"
@@ -29,13 +36,15 @@
                 android:clickable="false"
                 android:orientation="vertical">
 
+
                 <TextView
                     android:id="@+id/description"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:gravity="center|clip_vertical"
-                    android:text="TextView"/>
+                    android:text="TextView"
+                    android:textColor="@color/keyText"/>
 
 
             </LinearLayout>

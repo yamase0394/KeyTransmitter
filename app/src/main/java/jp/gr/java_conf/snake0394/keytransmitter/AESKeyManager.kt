@@ -8,13 +8,9 @@ import javax.crypto.KeyGenerator
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-/**
- * Created by snake0394 on 2017/06/20.
- */
+class AESKeyManager {
 
-class AESManager {
-
-    lateinit var rawKey: ByteArray
+    lateinit var key: ByteArray
         private set
         get
 
@@ -27,7 +23,7 @@ class AESManager {
     }
 
     fun encrypt(plain: String): String {
-        return encrypt(plain, rawKey)
+        return encrypt(plain, key)
     }
 
     fun encrypt(plain: ByteArray, key: ByteArray): String {
@@ -39,7 +35,7 @@ class AESManager {
     }
 
     fun decrypt(iv: ByteArray, encrypted: ByteArray): ByteArray {
-        return decrypt(iv, encrypted, rawKey)
+        return decrypt(iv, encrypted, key)
     }
 
     fun decrypt(iv: ByteArray, encrypted: ByteArray, key: ByteArray): ByteArray {
@@ -50,10 +46,10 @@ class AESManager {
     }
 
     fun initKey() {
-        val keygen = KeyGenerator.getInstance("AES")
+        val keyGen = KeyGenerator.getInstance("AES")
         val random = SecureRandom.getInstance("SHA1PRNG")
-        keygen.init(256, random)
-        val key = keygen.generateKey()
-        rawKey = key.encoded
+        keyGen.init(256, random)
+        val key = keyGen.generateKey()
+        this.key = key.encoded
     }
 }

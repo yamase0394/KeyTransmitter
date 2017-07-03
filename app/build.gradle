@@ -33,6 +33,7 @@ dependencies {
     compile 'com.android.support:percent:25.1.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.madgag.spongycastle:bctls-jdk15on:1.56.0.0'
+    compile 'com.google.android.gms:play-services-ads:10.2.4'
 }
 repositories {
     mavenCentral()
@@ -40,3 +41,5 @@ repositories {
         url 'https://oss.sonatype.org/content/repositories/snapshots/'
     }
 }
+
+

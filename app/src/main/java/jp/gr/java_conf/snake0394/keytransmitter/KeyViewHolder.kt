@@ -4,6 +4,7 @@ import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 import android.widget.TextView
 
 /**
@@ -12,16 +13,24 @@ import android.widget.TextView
 class KeyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnTouchListener, View.OnLongClickListener {
     private val description: TextView
     private lateinit var key: BaseKey
+    private val knobView :ImageView
 
     init {
         val cardView = itemView.findViewById(R.id.cardView) as CardView
         cardView.setOnTouchListener(this)
         cardView.setOnLongClickListener(this)
         description = itemView.findViewById(R.id.description) as TextView
+        knobView = itemView.findViewById(R.id.image_knob) as ImageView
     }
 
     fun setKey(key: BaseKey) {
         this.key = key
+
+        if (key is ControlKnob) {
+            knobView.visibility = View.VISIBLE
+        } else {
+            knobView.visibility = View.GONE
+        }
 
         if (key is EmptyKey) {
             description.visibility = View.INVISIBLE
