@@ -4,7 +4,7 @@ import android.view.MotionEvent
 import android.view.View
 import java.io.Serializable
 
-abstract class BaseKey(val columnSpan: Int, val rowSpan: Int, val description: String, val type: KeyType) : Serializable {
+abstract class BaseKey(val columnSpan: Int, val rowSpan: Int, val description: String, val keyType: KeyType) : Serializable {
 
     var keyCodesMap = mutableMapOf<String, List<String>>()
 

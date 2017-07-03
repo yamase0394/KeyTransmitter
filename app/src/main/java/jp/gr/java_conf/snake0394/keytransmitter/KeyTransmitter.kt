@@ -96,7 +96,6 @@ object KeyTransmitter {
             private set
             get
         private lateinit var server: ServerSocket
-        private lateinit var base64EncryptedIvAndSessionKey: ByteArray
 
         init {
             initSessionKey()
@@ -141,11 +140,31 @@ object KeyTransmitter {
                             keyAgree.doPhase(csPubKey, true)
                             val dhSecKey = keyAgree.generateSecret()
 
-                            sock.soTimeout = TimeUnit.SECONDS.toMillis(10).toInt()
+                            val sp = PreferenceManager.getDefaultSharedPreferences(context)
+                            val keyStoreManager = KeyStoreManager.getInstance(context)
+                            val encryptedPw = sp.getString("pass", "")
+                            val pwBytes: ByteArray
+                            if (encryptedPw.isNullOrEmpty()) {
+                                Handler(context.mainLooper).post {
+                                    Toast.makeText(context, "パスワードが設定されていません", Toast.LENGTH_LONG).show()
+                                }
+                                stop()
+                                return@thread
+                            } else {
+                                pwBytes = keyStoreManager.decrypt(Base64.decode(encryptedPw, Base64.NO_WRAP))
+                            }
+                            val gen = PKCS5S2ParametersGenerator(SHA256Digest())
+                            gen.init(pwBytes, dhSecKey, 4096)
+                            val secKey = (gen.generateDerivedParameters(256) as KeyParameter).key
 
-                            output.write(aesManager.encrypt(base64EncryptedIvAndSessionKey, dhSecKey))
+                            output.write(aesManager.encrypt(aesManager.key, secKey))
                             output.newLine()
                             output.flush()
+
+                            Arrays.fill(pwBytes, 0)
+                            Arrays.fill(secKey, 0)
+
+                            sock.soTimeout = TimeUnit.SECONDS.toMillis(10).toInt()
 
                             val encrypted: String
                             try {
@@ -200,22 +219,6 @@ object KeyTransmitter {
 
         private fun initSessionKey() {
             aesManager.initKey()
-
-            val sp = PreferenceManager.getDefaultSharedPreferences(context)
-            val keyStoreManager = KeyStoreManager.getInstance(context)
-            val encryptedPw = sp.getString("pass", "")
-            val pwBytes: ByteArray
-            if (encryptedPw.isNullOrEmpty()) {
-                pwBytes = "".toByteArray(Charsets.UTF_8)
-            } else {
-                pwBytes = keyStoreManager.decrypt(Base64.decode(encryptedPw, Base64.NO_WRAP))
-            }
-            val gen = PKCS5S2ParametersGenerator(SHA256Digest())
-            gen.init(pwBytes, "終末なにしてますか?忙しいですか?救ってもらっていいですか?".toByteArray(Charsets.UTF_8), 4096)
-            val secKey = (gen.generateDerivedParameters(256) as KeyParameter).key
-            Arrays.fill(pwBytes, 0)
-            base64EncryptedIvAndSessionKey = aesManager.encrypt(aesManager.key, secKey).toByteArray(Charsets.UTF_8)
-            Arrays.fill(secKey, 0)
         }
 
         fun stop() {

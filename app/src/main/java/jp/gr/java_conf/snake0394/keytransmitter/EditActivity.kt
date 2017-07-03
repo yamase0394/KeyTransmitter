@@ -4,18 +4,18 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.support.v7.widget.helper.ItemTouchHelper
-import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
 import android.view.MenuItem
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
-import java.io.*
-import java.util.*
 
 class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClickListener, AddKeyDialogFragment.OnKeyGeneratedListener, EditKeyDialogFragment.OnKeyUpdatedListener {
 
@@ -42,24 +42,12 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         }, 4, 1f)
 
         //RecyclerViewに登録するデータの初期化
-        var datasource: List<BaseKey> = ArrayList()
-        val file = File(filesDir.absolutePath + File.separator + "keyboard")
-        //シリアライズされたデータがあるか
-        if (file.exists()) {
-            try {
-                val ois = ObjectInputStream(FileInputStream(file))
-                datasource = ois.readObject() as List<BaseKey>
-                Log.d("main", "deserialize")
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: ClassNotFoundException) {
-                e.printStackTrace()
-            }
-        } else {
-            finish()
-            overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-            return
-        }
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
+        val gson = GsonBuilder()
+                .registerTypeAdapter(type, KeyDeserializer())
+                .create()
+        var datasource: ArrayList<BaseKey> = gson.fromJson<ArrayList<BaseKey>>(sp.getString(MainActivity.SAVE_KEY, ""), object : TypeToken<ArrayList<BaseKey>>() {}.getType())
 
         recyclerAdapter = EditKeyRecyclerViewAdapter()
         recyclerAdapter.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, abstractKey: BaseKey ->
@@ -125,10 +113,12 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             R.id.save -> {
                 //datasourceをシリアライズ
                 try {
-                    val out = ObjectOutputStream(FileOutputStream(filesDir.absolutePath + File.separator + "keyboard"))
-                    out.writeObject(recyclerAdapter.keyList)
-                    out.flush()
-                    out.close()
+                    val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                    val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
+                    val gson = GsonBuilder()
+                            .registerTypeAdapter(type, KeySerializer())
+                            .create()
+                    sp.edit().putString(MainActivity.SAVE_KEY, gson.toJson(recyclerAdapter.keyList)).apply()
                     setResult(Activity.RESULT_OK, Intent())
                 } catch (e: Exception) {
                     e.printStackTrace()

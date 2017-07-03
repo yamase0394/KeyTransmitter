@@ -13,16 +13,16 @@ import android.view.MenuItem
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
-import java.io.*
-import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
 
     private lateinit var recyclerAdapter: KeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
-    private val adView:AdView by lazy { findViewById(R.id.adView) as AdView }
+    private val adView: AdView by lazy { findViewById(R.id.adView) as AdView }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
-        toolbar.title = "ProgrammableKeyboard"
+        toolbar.title = "Programmable Keyboard"
         setSupportActionBar(toolbar)
 
         recyclerView = findViewById(R.id.recyclerview) as RecyclerView
@@ -47,39 +47,30 @@ class MainActivity : AppCompatActivity() {
             SpannedGridLayoutManager.SpanInfo(key.columnSpan, key.rowSpan)
         }, 4, 1f)
 
-        var datasource: MutableList<BaseKey> = ArrayList()
-        val dir = filesDir
-        val filePath = dir.absolutePath + File.separator + "keyboard"
-        val file = File(filePath)
-        if (file.exists()) {
-            try {
-                val input = ObjectInputStream(FileInputStream(file))
-                datasource = input.readObject() as MutableList<BaseKey>
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } catch (e: ClassNotFoundException) {
-                e.printStackTrace()
-            }
-        } else {
+        var dataSource: ArrayList<BaseKey> = ArrayList()
+        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+
+        val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
+        val gson = GsonBuilder()
+                .registerTypeAdapter(type, KeySerializer())
+                .registerTypeAdapter(type, KeyDeserializer())
+                .create()
+
+        if (sp.getString(SAVE_KEY, "").isNullOrEmpty()) {
             for (i in 0..19) {
-                datasource.add(EmptyKey())
+                dataSource.add(EmptyKey())
             }
-            try {
-                val out = ObjectOutputStream(FileOutputStream(filePath))
-                out.writeObject(datasource)
-                out.flush()
-                out.close()
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
+            sp.edit().putString(SAVE_KEY, gson.toJson(dataSource)).apply()
+        } else {
+            dataSource = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SAVE_KEY, ""), type)
         }
+
         recyclerAdapter = KeyRecyclerViewAdapter()
-        recyclerAdapter.addAllView(datasource)
+        recyclerAdapter.addAllView(dataSource)
         recyclerView.adapter = recyclerAdapter
 
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 10, 20, 0))
 
-        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         KeyTransmitter.run(sp.getString("ip", ""), sp.getInt("port", 8080), applicationContext)
     }
 
@@ -126,27 +117,20 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         //EditActivityでの編集結果を反映
         if (resultCode == Activity.RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
-            val dir = filesDir
-            val filePath = dir.absolutePath + File.separator + "keyboard"
-            val file = File(filePath)
-            if (file.exists()) {
-                try {
-                    val input = ObjectInputStream(FileInputStream(file))
-                    val keyList = input.readObject() as MutableList<BaseKey>
-                    recyclerAdapter = KeyRecyclerViewAdapter()
-                    recyclerAdapter.keyList = keyList
-                    recyclerView.swapAdapter(recyclerAdapter, false)
-                } catch (e: IOException) {
-                    e.printStackTrace()
-                } catch (e: ClassNotFoundException) {
-                    e.printStackTrace()
-                }
-            }
+            recyclerAdapter = KeyRecyclerViewAdapter()
+            val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
+            val gson = GsonBuilder()
+                    .registerTypeAdapter(type, KeyDeserializer())
+                    .create()
+            recyclerAdapter.keyList = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SAVE_KEY, ""), type)
+            recyclerView.swapAdapter(recyclerAdapter, false)
         }
     }
 
     companion object {
         private val EDIT_REQUEST_CODE = 1
+        val SAVE_KEY = "keyboard1"
     }
 }
 

@@ -201,7 +201,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             override fun onNothingSelected(adapterView: AdapterView<*>) {
             }
         }
-        keyTypeSpinner.setSelection(key.type.ordinal)
+        keyTypeSpinner.setSelection(key.keyType.ordinal)
 
         val keyCodesLayout = view.findViewById(R.id.keyCodesLayout) as LinearLayout
         val rightKeyCodesLayout = view.findViewById(R.id.rotate_right_keyCodesLayout) as LinearLayout
@@ -210,7 +210,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val flickDownKeyCodesLayout = view.findViewById(R.id.flick_down_keyCodesLayout) as LinearLayout
         val flickRightKeyCodesLayout = view.findViewById(R.id.flick_right_keyCodesLayout) as LinearLayout
         val flickLeftKeyCodesLayout = view.findViewById(R.id.flick_left_keyCodesLayout) as LinearLayout
-        when (key.type) {
+        when (key.keyType) {
             KeyType.RELEASED, KeyType.LONG_PRESS, KeyType.PRESSING -> initKeyCodesLayout(key.keyCodesMap["normal"] ?: listOf(), keyCodeViewList, keyCodesLayout)
             KeyType.KNOB -> {
                 initKeyCodesLayout(key.keyCodesMap["right"] ?: listOf(), rightKeyCodeViewList, rightKeyCodesLayout)
@@ -448,7 +448,7 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             val fragment = EditKeyDialogFragment()
             val args = Bundle()
             args.putInt("position", position)
-            if(key.type == KeyType.EMPTY){
+            if(key.keyType == KeyType.EMPTY){
                 args.putInt("emptySpace", emptySpace)
             }else {
                 args.putInt("emptySpace", emptySpace + key.columnSpan * key.rowSpan)

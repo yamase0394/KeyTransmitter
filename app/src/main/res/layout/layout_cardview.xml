@@ -1,23 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:id="@+id/layout"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:clickable="false"
-              android:orientation="vertical">
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardBackgroundColor="@color/keyBackground"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardCornerRadius="10dp"
+    app:cardUseCompatPadding="true">
 
-    <android.support.v7.widget.CardView
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:clickable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="@color/keyBackground"
-        app:cardCornerRadius="10dp"
-        app:cardUseCompatPadding="true">
-
-        <android.support.percent.PercentRelativeLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -28,28 +20,17 @@
                 android:layout_weight="1"
                 app:srcCompat="@drawable/knob_gray"/>
 
-            <LinearLayout
-                android:id="@+id/cardLayout"
+
+            <TextView
+                android:id="@+id/description"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_horizontal"
-                android:clickable="false"
-                android:orientation="vertical">
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                android:gravity="center|clip_vertical"
+                android:text="TextView"
+                android:textColor="@color/keyText"/>
 
+        </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center|clip_vertical"
-                    android:text="TextView"
-                    android:textColor="@color/keyText"/>
-
-
-            </LinearLayout>
-
-        </android.support.percent.PercentRelativeLayout>
-
-    </android.support.v7.widget.CardView>
-</LinearLayout>
+</android.support.v7.widget.CardView>
