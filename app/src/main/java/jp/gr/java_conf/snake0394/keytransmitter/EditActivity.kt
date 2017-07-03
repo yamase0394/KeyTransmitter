@@ -22,8 +22,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     private lateinit var recyclerAdapter: EditKeyRecyclerViewAdapter
     private lateinit var recyclerView: RecyclerView
 
-    private var isEdited = false
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
@@ -98,7 +96,13 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home, R.id.cancel -> {
-                if (isEdited) {
+                val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+                val pre = sp.getString(MainActivity.SAVE_KEY, "")
+                val gson = GsonBuilder()
+                        .registerTypeAdapter(object : TypeToken<ArrayList<BaseKey>>() {}.type, KeySerializer())
+                        .create()
+                val now = gson.toJson(recyclerAdapter.keyList)
+                if (pre != now) {
                     AlertDialog.Builder(this@EditActivity)
                             .setMessage("変更を破棄して終了しますか？")
                             .setPositiveButton("Yes", { _, _ ->
@@ -132,7 +136,13 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (isEdited) {
+            val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            val pre = sp.getString(MainActivity.SAVE_KEY, "")
+            val gson = GsonBuilder()
+                    .registerTypeAdapter(object : TypeToken<ArrayList<BaseKey>>() {}.type, KeySerializer())
+                    .create()
+            val now = gson.toJson(recyclerAdapter.keyList)
+            if (pre != now) {
                 AlertDialog.Builder(this@EditActivity)
                         .setMessage("変更を破棄して終了しますか？")
                         .setPositiveButton("Yes", { _, _ ->
@@ -141,11 +151,9 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                         })
                         .setNegativeButton("No", null)
                         .show()
-                return super.onKeyDown(keyCode, event)
             } else {
                 finish()
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-                return true
             }
         }
         return false
@@ -157,10 +165,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 val dialogFragment = EditKeyDialogFragment.newInstance(position, recyclerAdapter.emptySpace, recyclerAdapter[position])
                 dialogFragment.show(supportFragmentManager, "fragment_dialog")
             }
-            "削除" -> {
-                recyclerAdapter.removeView(position, true)
-                isEdited = true
-            }
+            "削除" -> recyclerAdapter.removeView(position, true)
         }
     }
 
@@ -194,8 +199,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
             }
             i++
         }
-
-        isEdited = true
     }
 
     override fun onKeyUpdated(position: Int, abstractKey: BaseKey) {
@@ -225,8 +228,6 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                 break
             }
         }
-
-        isEdited = true
     }
 }
 
