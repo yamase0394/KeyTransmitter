@@ -38,7 +38,8 @@ class MainActivity : AppCompatActivity() {
 
         MobileAds.initialize(this, "ca-app-pub-1067539886647773~9620833844");
         val adRequest = AdRequest.Builder()
-                .addTestDevice("CB89206D3413270C73A3DBEA8C304BFC")
+                .addTestDevice("CB89206D3413270C73A3DBEA8C304BFC")//f01f
+                .addTestDevice("AC2DA69AAB4B87A53E4459076688EFA3")//zen
                 .build()
         adView.loadAd(adRequest)
 
@@ -58,6 +59,10 @@ class MainActivity : AppCompatActivity() {
 
                 Logger.d(TAG, "spinner_name_ip:${spinner.selectedItem as String} was selected")
                 val json = sp.getString(SP_KEY_IP_MAP, "")
+                if (json.isNullOrBlank()) {
+                    Logger.d(TAG, "onItemSelected:json isNullOrBlank")
+                    return
+                }
                 val ipToNameMap = Gson().fromJson<MutableMap<String, String>>(json, object : TypeToken<LinkedHashMap<String, String>>() {}.type)
                 val index = ipToNameMap.values.indexOf(spinner.selectedItem as String)
                 val ip = ipToNameMap.keys.elementAt(index)
@@ -133,7 +138,12 @@ class MainActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 10, 20, 0))
 
         Log.d(TAG, "spinner.selectedItem = ${spinner.selectedItem as String}")
-        KeyTransmitter.run(ipToNameMap.keys.elementAt(ipToNameMap.values.indexOf(spinner.selectedItem as String)), sp.getInt("port", 8080), this)
+        val index = ipToNameMap.values.indexOf(spinner.selectedItem as String)
+        if (index >= 0) {
+            KeyTransmitter.run(ipToNameMap.keys.elementAt(index), sp.getInt("port", 8080), this)
+        } else {
+            KeyTransmitter.run("", sp.getInt("port", 8080), this)
+        }
     }
 
     override fun onDestroy() {
