@@ -19,7 +19,13 @@
             android:layout_height="50dp"
             android:background="?attr/colorPrimary"
             android:minHeight="50dp"
-            android:theme="@style/ToolbarTheme"/>
+            android:theme="@style/ToolbarTheme">
+
+            <Spinner
+                android:id="@+id/spinner_name_ip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </android.support.v7.widget.Toolbar>
 
         <jp.gr.java_conf.snake0394.keytransmitter.MyRecyclerView
             android:id="@+id/recyclerview"

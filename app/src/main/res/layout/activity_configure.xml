@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_configure"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="netpro.keytransmitter.jp.gr.java_conf.snake0394.keytransmitter.ConfigureActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:orientation="vertical"
@@ -42,8 +41,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="送信先IPアドレス"
-                        android:maxLines="1"/>
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:singleLine="true"/>
                 </android.support.design.widget.TextInputLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="送信先リスト"/>
+
+                    <Button
+                        android:id="@+id/btn_add_ip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="追加"/>
+
+                    <Button
+                        android:id="@+id/btn_edit_ip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="編集"/>
+
+                </LinearLayout>
 
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
@@ -55,8 +85,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="送信先ポート番号"
+                        android:maxLength="5"
                         android:maxLines="1"
-                        android:numeric="integer"/>
+                        android:numeric="integer"
+                        android:singleLine="true"/>
                 </android.support.design.widget.TextInputLayout>
 
 

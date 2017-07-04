@@ -10,9 +10,14 @@ import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.plaidapp.ui.recyclerview.SpannedGridLayoutManager
@@ -21,14 +26,15 @@ class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
 
     private lateinit var recyclerAdapter: KeyRecyclerViewAdapter
-    private lateinit var recyclerView: RecyclerView
-    private val adView: AdView by lazy { findViewById(R.id.adView) as AdView }
+    private val recyclerView by lazy { findViewById(R.id.recyclerview) as RecyclerView }
+    private val adView by lazy { findViewById(R.id.adView) as AdView }
+    private val sp by lazy { PreferenceManager.getDefaultSharedPreferences(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Log.d(TAG, "onCreate")
+        Logger.d(TAG, "onCreate")
 
         MobileAds.initialize(this, "ca-app-pub-1067539886647773~9620833844");
         val adRequest = AdRequest.Builder()
@@ -37,10 +43,72 @@ class MainActivity : AppCompatActivity() {
         adView.loadAd(adRequest)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
-        toolbar.title = "Programmable Keyboard"
-        setSupportActionBar(toolbar)
+        val spinner = toolbar.findViewById(R.id.spinner_name_ip) as Spinner
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+            }
 
-        recyclerView = findViewById(R.id.recyclerview) as RecyclerView
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, pos: Int, id: Long) {
+                val spinner = parent as Spinner
+                if (!spinner.isFocusable) {
+                    Logger.d(TAG, "spinner_name_ip is not focusable")
+                    spinner.isFocusable = true
+                    return
+                }
+
+                Logger.d(TAG, "spinner_name_ip:${spinner.selectedItem as String} was selected")
+                val json = sp.getString(SP_KEY_IP_MAP, "")
+                val ipToNameMap = Gson().fromJson<MutableMap<String, String>>(json, object : TypeToken<LinkedHashMap<String, String>>() {}.type)
+                val index = ipToNameMap.values.indexOf(spinner.selectedItem as String)
+                val ip = ipToNameMap.keys.elementAt(index)
+
+                KeyTransmitter.restart(ip, sp.getInt("port", 8080))
+            }
+        }
+
+        val typeBaseKeyArray = object : TypeToken<ArrayList<BaseKey>>() {}.type
+        val gson = GsonBuilder()
+                .registerTypeAdapter(typeBaseKeyArray, KeySerializer())
+                .registerTypeAdapter(typeBaseKeyArray, KeyDeserializer())
+                .create()
+        val json = sp.getString(SP_KEY_IP_MAP, "")
+        val ipToNameMap: MutableMap<String, String>
+        if (json.isNullOrBlank()) {
+            Logger.d(TAG, "ipMap json is null or empty")
+            val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+            adapter.add("未接続")
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+
+            ipToNameMap = mutableMapOf()
+        } else {
+            Logger.d(TAG, "generate ipMap from json")
+
+            ipToNameMap = gson.fromJson<MutableMap<String, String>>(json, object : TypeToken<LinkedHashMap<String, String>>() {}.type)
+            Logger.d(TAG, "recentDest = ${sp.getString(SP_KEY_RECENT_DEST, "")}")
+            var index = ipToNameMap.keys.indexOf(sp.getString(SP_KEY_RECENT_DEST, ""))
+            if (index == -1) {
+                index = ipToNameMap.values.indexOfFirst { it.startsWith("未接続") }
+                if(index == -1){
+                    index = 0
+                }
+            }
+
+            val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+            if(ipToNameMap.isEmpty()){
+                adapter.add("未接続")
+            } else {
+                adapter.addAll(ipToNameMap.values.toList())
+            }
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinner.adapter = adapter
+            spinner.isFocusable = false
+            spinner.setSelection(index)
+        }
+
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayShowTitleEnabled(false)
+
         recyclerView.setHasFixedSize(false)
         recyclerView.layoutManager = SpannedGridLayoutManager(SpannedGridLayoutManager.GridSpanLookup { position ->
             val key = recyclerAdapter[position]
@@ -48,21 +116,14 @@ class MainActivity : AppCompatActivity() {
         }, 4, 1f)
 
         var dataSource: ArrayList<BaseKey> = ArrayList()
-        val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
-        val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
-        val gson = GsonBuilder()
-                .registerTypeAdapter(type, KeySerializer())
-                .registerTypeAdapter(type, KeyDeserializer())
-                .create()
-
-        if (sp.getString(SAVE_KEY, "").isNullOrEmpty()) {
+        if (sp.getString(SP_KEY_KEYBOARD, "").isNullOrEmpty()) {
             for (i in 0..19) {
                 dataSource.add(EmptyKey())
             }
-            sp.edit().putString(SAVE_KEY, gson.toJson(dataSource)).apply()
+            sp.edit().putString(SP_KEY_KEYBOARD, gson.toJson(dataSource)).apply()
         } else {
-            dataSource = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SAVE_KEY, ""), type)
+            dataSource = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SP_KEY_KEYBOARD, ""), typeBaseKeyArray)
         }
 
         recyclerAdapter = KeyRecyclerViewAdapter()
@@ -71,26 +132,27 @@ class MainActivity : AppCompatActivity() {
 
         recyclerView.addItemDecoration(SpaceItemDecoration(0, 10, 20, 0))
 
-        KeyTransmitter.run(sp.getString("ip", ""), sp.getInt("port", 8080), applicationContext)
+        Log.d(TAG, "spinner.selectedItem = ${spinner.selectedItem as String}")
+        KeyTransmitter.run(ipToNameMap.keys.elementAt(ipToNameMap.values.indexOf(spinner.selectedItem as String)), sp.getInt("port", 8080), this)
     }
 
     override fun onDestroy() {
         super.onDestroy()
         adView.destroy()
-        Log.d(TAG, "onDestroy")
+        Logger.d(TAG, "onDestroy")
         KeyTransmitter.stop()
     }
 
     override fun onPause() {
         super.onPause()
         adView.pause()
-        Log.d(TAG, "onPause")
+        Logger.d(TAG, "onPause")
     }
 
     override fun onResume() {
         super.onResume()
         adView.resume()
-        Log.d(TAG, "onResume")
+        Logger.d(TAG, "onResume")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -107,7 +169,7 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.menu_item_config -> {
                 intent = Intent(applicationContext, ConfigureActivity::class.java)
-                startActivity(intent)
+                startActivityForResult(intent, CONFIG_REQUEST_CODE)
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
             }
         }
@@ -115,22 +177,81 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        //EditActivityでの編集結果を反映
-        if (resultCode == Activity.RESULT_OK && requestCode == EDIT_REQUEST_CODE) {
-            recyclerAdapter = KeyRecyclerViewAdapter()
-            val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
-            val gson = GsonBuilder()
-                    .registerTypeAdapter(type, KeyDeserializer())
-                    .create()
-            recyclerAdapter.keyList = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SAVE_KEY, ""), type)
-            recyclerView.swapAdapter(recyclerAdapter, false)
+        if (resultCode != Activity.RESULT_OK) {
+            return
+        }
+
+        when (requestCode) {
+            EDIT_REQUEST_CODE -> {
+                recyclerAdapter = KeyRecyclerViewAdapter()
+                val type = object : TypeToken<ArrayList<BaseKey>>() {}.type
+                val gson = GsonBuilder()
+                        .registerTypeAdapter(type, KeyDeserializer())
+                        .create()
+                recyclerAdapter.keyList = gson.fromJson<ArrayList<BaseKey>>(sp.getString(SP_KEY_KEYBOARD, ""), type)
+                recyclerView.swapAdapter(recyclerAdapter, false)
+            }
+            CONFIG_REQUEST_CODE -> {
+                val toolbar = findViewById(R.id.toolbar) as Toolbar
+                val spinner = toolbar.findViewById(R.id.spinner_name_ip) as Spinner
+                val preSelected = spinner.selectedItem as String
+
+                val gson = Gson()
+                val json = sp.getString(SP_KEY_IP_MAP, "")
+                if (json.isNullOrBlank()) {
+                    Logger.d(TAG, "ipMap json is null or empty")
+                    val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+                    val ip = data!!.getStringExtra("ip")
+                    if (ip == null) {
+                        adapter.add("未接続")
+                    } else {
+                        KeyTransmitter.restart(ip, sp.getInt("port", 8080))
+                    }
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinner.adapter = adapter
+                } else {
+                    Logger.d(TAG, "generate ipMap from json")
+
+                    val ipToNameMap = gson.fromJson<MutableMap<String, String>>(json, object : TypeToken<LinkedHashMap<String, String>>() {}.type)
+
+                    val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
+                    if(ipToNameMap.isEmpty()){
+                        adapter.add("未接続")
+                    } else {
+                        adapter.addAll(ipToNameMap.values.toList())
+                    }
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                    spinner.adapter = adapter
+                    spinner.isFocusable = false
+                    var index:Int
+                    val ip = data!!.getStringExtra("ip")
+                    if(ip == null){
+                        index = ipToNameMap.values.indexOf(preSelected)
+                    } else {
+                        index = ipToNameMap.keys.indexOf(ip)
+                    }
+                    if(index == -1){
+                        index = ipToNameMap.keys.indexOf(sp.getString(SP_KEY_RECENT_DEST, ""))
+                        if (index == -1) {
+                            index = ipToNameMap.values.indexOfFirst { it.startsWith("未接続") }
+                            if(index == -1){
+                                index = 0
+                            }
+                        }
+                    }
+                    KeyTransmitter.restart(ipToNameMap.keys.elementAt(index), sp.getInt("port", 8080))
+                    spinner.setSelection(index)
+                }
+            }
         }
     }
 
     companion object {
         private val EDIT_REQUEST_CODE = 1
-        val SAVE_KEY = "keyboard1"
+        private val CONFIG_REQUEST_CODE = 2
+        val SP_KEY_KEYBOARD = "keyboard1"
+        val SP_KEY_IP_MAP = "ipToNameMap"
+        val SP_KEY_RECENT_DEST = "recentDest"
     }
 }
 

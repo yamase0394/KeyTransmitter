@@ -5,7 +5,11 @@ import android.os.Build
 import android.os.Handler
 import android.preference.PreferenceManager
 import android.util.Base64
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.spongycastle.crypto.digests.SHA256Digest
 import org.spongycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.spongycastle.crypto.params.ECPublicKeyParameters
@@ -41,7 +45,7 @@ object KeyTransmitter {
         }
 
         KeyTransmitter.context = context
-        if (ip.isEmpty()) {
+        if (ip.isNullOrBlank()) {
             Handler(KeyTransmitter.context.mainLooper).post {
                 Toast.makeText(KeyTransmitter.context, "IPアドレスを設定してください", Toast.LENGTH_LONG).show()
             }
@@ -58,6 +62,7 @@ object KeyTransmitter {
     }
 
     fun restart(ip: String, port: Int) {
+        Logger.d(TAG, "restart ip:${ip} port:${port}")
         stop()
         Thread.sleep(100)
         run(ip, port, context)
@@ -203,11 +208,45 @@ object KeyTransmitter {
                             output.write(aesManager.encrypt(Build.MODEL))
                             output.newLine()
                             output.flush()
+
+                            val ivAndEncryptedName = input.readLine().split("?")
+                            thread {
+                                val iv = Base64.decode(ivAndEncryptedName[0], Base64.NO_WRAP)
+                                val encryptedName = Base64.decode(ivAndEncryptedName[1], Base64.NO_WRAP)
+                                val machineName = aesManager.decrypt(iv, encryptedName).toString(Charsets.UTF_8)
+
+                                val sp = PreferenceManager.getDefaultSharedPreferences(context)
+                                val tokenType = object : TypeToken<LinkedHashMap<String, String>>() {}.type
+                                val gson = Gson()
+                                val json = sp.getString("ipToNameMap", "")
+                                val map: MutableMap<String, String>
+                                if (json.isNullOrEmpty()) {
+                                    map = mutableMapOf(ip to "$machineName($ip)")
+                                } else {
+                                    Logger.d(TAG, "map is not null")
+                                    map = gson.fromJson<MutableMap<String, String>>(json, tokenType)
+                                    map.put(ip, "$machineName($ip)")
+                                }
+                                sp.edit().putString("ipToNameMap", gson.toJson(map, tokenType)).apply()
+                                sp.edit().putString("recentDest", ip).apply()
+
+                                Handler(context.mainLooper).post {
+                                    val mainActivity = context as MainActivity
+                                    val toolbar = mainActivity.findViewById(R.id.toolbar)
+                                    val spinner = toolbar.findViewById(R.id.spinner_name_ip) as Spinner
+                                    val adapter = ArrayAdapter<String>(context, R.layout.spinner_item, map.values.toTypedArray())
+                                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                                    spinner.adapter = adapter
+                                    spinner.isFocusable = false
+                                    spinner.setSelection(map.keys.indexOf(ip))
+                                }
+                            }
                         }
                     }
                 } catch (e: SocketException) {
                     if (!isRunning) {
                         //stop()が呼ばれた
+                        Logger.d(TAG, "stop keyExchangeServer was called")
                         return@thread
                     }
                     throw e

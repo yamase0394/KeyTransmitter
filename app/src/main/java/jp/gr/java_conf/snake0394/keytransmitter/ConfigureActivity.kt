@@ -1,5 +1,7 @@
 package jp.gr.java_conf.snake0394.keytransmitter
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.TextInputLayout
@@ -9,11 +11,21 @@ import android.util.Base64
 import android.view.KeyEvent
 import android.view.MenuItem
 import android.widget.Button
+import android.widget.Toast
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import java.nio.ByteBuffer
 import java.nio.CharBuffer
 import java.util.*
 
-class ConfigureActivity : AppCompatActivity() {
+class ConfigureActivity : AppCompatActivity(), EditIpListDialog.OnCheckFinishedListener {
+
+    private lateinit var map: MutableMap<String, String>
+    private val resultIntent by lazy { Intent() }
+
+    override fun onCheckFinished(checkedList: List<String>) {
+        map = map.filterValues { !checkedList.contains(it) }.toMutableMap()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +41,32 @@ class ConfigureActivity : AppCompatActivity() {
 
         val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
 
+        val tokenType = object : TypeToken<LinkedHashMap<String, String>>() {}.type
+        val gson = Gson()
+        val json = sp.getString(MainActivity.SP_KEY_IP_MAP, "")
+        map = if (json.isNullOrBlank()) mutableMapOf() else gson.fromJson<MutableMap<String, String>>(json, tokenType)
+
         val ipTextInputLayout = findViewById(R.id.text_input_layout_ip) as TextInputLayout
-        ipTextInputLayout.editText!!.setText(sp.getString("ip", null))
+
+        val ipAddBtn = findViewById(R.id.btn_add_ip) as Button
+        ipAddBtn.setOnClickListener {
+            val ipStr = ipTextInputLayout.editText!!.text.toString()
+            if (!ipStr.isNullOrBlank()) {
+                map.put(ipStr, "未接続(${ipStr})")
+                resultIntent.putExtra("ip", ipStr)
+                Toast.makeText(this, "追加完了", Toast.LENGTH_SHORT).show()
+            }
+            ipTextInputLayout.editText!!.setText("")
+        }
+
+        val ipEditBtn = findViewById(R.id.btn_edit_ip) as Button
+        ipEditBtn.setOnClickListener {
+            if(map.isEmpty()){
+                Toast.makeText(this, "リストが空です", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            EditIpListDialog.show(this, map.values.toTypedArray())
+        }
 
         val portTextInputLayout = findViewById(R.id.text_input_layout_port) as TextInputLayout
         portTextInputLayout.editText!!.setText(sp.getInt("port", 8080).toString())
@@ -53,8 +89,7 @@ class ConfigureActivity : AppCompatActivity() {
         saveBtn.setOnClickListener {
             val editor = sp.edit()
 
-            val ipStr = ipTextInputLayout.editText!!.text.toString()
-            editor.putString("ip", ipStr)
+            editor.putString("ipToNameMap", gson.toJson(map, tokenType))
 
             val port = Integer.parseInt(portTextInputLayout.editText!!.text.toString())
             editor.putInt("port", port)
@@ -71,8 +106,7 @@ class ConfigureActivity : AppCompatActivity() {
 
             editor.apply()
 
-            KeyTransmitter.restart(ipStr, port)
-
+            setResult(Activity.RESULT_OK, resultIntent)
             finish()
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
         }

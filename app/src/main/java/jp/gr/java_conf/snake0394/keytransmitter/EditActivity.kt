@@ -27,7 +27,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         setContentView(R.layout.activity_edit)
 
         val toolbar = findViewById(R.id.toolbar) as Toolbar
-        toolbar.title = "Edit"
+        toolbar.title = "編集"
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setHomeButtonEnabled(true)
@@ -45,7 +45,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         val gson = GsonBuilder()
                 .registerTypeAdapter(type, KeyDeserializer())
                 .create()
-        var datasource: ArrayList<BaseKey> = gson.fromJson<ArrayList<BaseKey>>(sp.getString(MainActivity.SAVE_KEY, ""), object : TypeToken<ArrayList<BaseKey>>() {}.getType())
+        var datasource: ArrayList<BaseKey> = gson.fromJson<ArrayList<BaseKey>>(sp.getString(MainActivity.SP_KEY_KEYBOARD, ""), object : TypeToken<ArrayList<BaseKey>>() {}.getType())
 
         recyclerAdapter = EditKeyRecyclerViewAdapter()
         recyclerAdapter.setOnRecyclerClickListener(OnRecyclerClickListener { position: Int, abstractKey: BaseKey ->
@@ -97,7 +97,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
         when (item.itemId) {
             android.R.id.home, R.id.cancel -> {
                 val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-                val pre = sp.getString(MainActivity.SAVE_KEY, "")
+                val pre = sp.getString(MainActivity.SP_KEY_KEYBOARD, "")
                 val gson = GsonBuilder()
                         .registerTypeAdapter(object : TypeToken<ArrayList<BaseKey>>() {}.type, KeySerializer())
                         .create()
@@ -122,7 +122,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
                     val gson = GsonBuilder()
                             .registerTypeAdapter(type, KeySerializer())
                             .create()
-                    sp.edit().putString(MainActivity.SAVE_KEY, gson.toJson(recyclerAdapter.keyList)).apply()
+                    sp.edit().putString(MainActivity.SP_KEY_KEYBOARD, gson.toJson(recyclerAdapter.keyList)).apply()
                     setResult(Activity.RESULT_OK, Intent())
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -137,7 +137,7 @@ class EditActivity : AppCompatActivity(), EditMenuDialogFragment.OnListItemClick
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             val sp = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-            val pre = sp.getString(MainActivity.SAVE_KEY, "")
+            val pre = sp.getString(MainActivity.SP_KEY_KEYBOARD, "")
             val gson = GsonBuilder()
                     .registerTypeAdapter(object : TypeToken<ArrayList<BaseKey>>() {}.type, KeySerializer())
                     .create()

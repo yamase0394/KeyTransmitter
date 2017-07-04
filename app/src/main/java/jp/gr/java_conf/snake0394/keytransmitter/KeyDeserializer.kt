@@ -16,7 +16,6 @@ class KeyDeserializer : JsonDeserializer<List<BaseKey>> {
 
         for (jsonElement in jsonArray) {
             val keyType = jsonElement.asJsonObject.get("keyType").asString
-            Logger.d("KeyDeserializer", "keyType = " + keyType)
             val type = map[keyType] ?: throw RuntimeException("Unknow KeyType: " + keyType)
             list.add(context.deserialize<BaseKey>(jsonElement, type))
         }
