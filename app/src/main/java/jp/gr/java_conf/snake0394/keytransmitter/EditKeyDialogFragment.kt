@@ -117,14 +117,14 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
         })
 
         val columnCountSpinner = view.findViewById(R.id.columnCountSpinner) as Spinner
-        val columnCounts = arrayOf(1, 2, 3, 4, 5)
+        val columnCounts = arrayOf(1, 2, 3, 4)
         var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, columnCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         columnCountSpinner.adapter = adapter
         columnCountSpinner.setSelection(key.columnSpan - 1)
 
         val rowCountSpinner = view.findViewById(R.id.rowCountSpinner) as Spinner
-        val rowCounts = arrayOf(1, 2, 3, 4)
+        val rowCounts = arrayOf(1, 2, 3, 4, 5)
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, rowCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         rowCountSpinner.adapter = adapter
@@ -448,9 +448,9 @@ class EditKeyDialogFragment : android.support.v4.app.DialogFragment() {
             val fragment = EditKeyDialogFragment()
             val args = Bundle()
             args.putInt("position", position)
-            if(key.keyType == KeyType.EMPTY){
+            if (key.keyType == KeyType.EMPTY) {
                 args.putInt("emptySpace", emptySpace)
-            }else {
+            } else {
                 args.putInt("emptySpace", emptySpace + key.columnSpan * key.rowSpan)
             }
             args.putSerializable("key", key)

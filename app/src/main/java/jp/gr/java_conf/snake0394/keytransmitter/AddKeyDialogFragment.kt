@@ -108,14 +108,14 @@ class AddKeyDialogFragment : android.support.v4.app.DialogFragment() {
         val addFlickLeftKeyLayout = view.findViewById(R.id.addFlickLeftKeyLayout) as LinearLayout
 
         val columnCountSpinner = view.findViewById(R.id.columnCountSpinner) as Spinner
-        val columnCounts = arrayOf(1, 2, 3, 4, 5)
+        val columnCounts = arrayOf(1, 2, 3, 4)
         var adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, columnCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         columnCountSpinner.adapter = adapter
         columnCountSpinner.setSelection(0)
 
         val rowCountSpinner = view.findViewById(R.id.rowCountSpinner) as Spinner
-        val rowCounts = arrayOf(1, 2, 3, 4)
+        val rowCounts = arrayOf(1, 2, 3, 4, 5)
         adapter = ArrayAdapter(context, android.R.layout.simple_spinner_item, rowCounts)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         rowCountSpinner.adapter = adapter

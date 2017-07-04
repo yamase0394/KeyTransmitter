@@ -89,13 +89,13 @@ class MainActivity : AppCompatActivity() {
             var index = ipToNameMap.keys.indexOf(sp.getString(SP_KEY_RECENT_DEST, ""))
             if (index == -1) {
                 index = ipToNameMap.values.indexOfFirst { it.startsWith("未接続") }
-                if(index == -1){
+                if (index == -1) {
                     index = 0
                 }
             }
 
             val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
-            if(ipToNameMap.isEmpty()){
+            if (ipToNameMap.isEmpty()) {
                 adapter.add("未接続")
             } else {
                 adapter.addAll(ipToNameMap.values.toList())
@@ -215,7 +215,7 @@ class MainActivity : AppCompatActivity() {
                     val ipToNameMap = gson.fromJson<MutableMap<String, String>>(json, object : TypeToken<LinkedHashMap<String, String>>() {}.type)
 
                     val adapter = ArrayAdapter<String>(this, R.layout.spinner_item)
-                    if(ipToNameMap.isEmpty()){
+                    if (ipToNameMap.isEmpty()) {
                         adapter.add("未接続")
                     } else {
                         adapter.addAll(ipToNameMap.values.toList())
@@ -223,18 +223,18 @@ class MainActivity : AppCompatActivity() {
                     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                     spinner.adapter = adapter
                     spinner.isFocusable = false
-                    var index:Int
+                    var index: Int
                     val ip = data!!.getStringExtra("ip")
-                    if(ip == null){
+                    if (ip == null) {
                         index = ipToNameMap.values.indexOf(preSelected)
                     } else {
                         index = ipToNameMap.keys.indexOf(ip)
                     }
-                    if(index == -1){
+                    if (index == -1) {
                         index = ipToNameMap.keys.indexOf(sp.getString(SP_KEY_RECENT_DEST, ""))
                         if (index == -1) {
                             index = ipToNameMap.values.indexOfFirst { it.startsWith("未接続") }
-                            if(index == -1){
+                            if (index == -1) {
                                 index = 0
                             }
                         }
